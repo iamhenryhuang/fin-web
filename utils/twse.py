@@ -723,26 +723,26 @@ def get_stock_chart_data(stock_code, days=7):
         # 使用預設期間而不是時間戳，避免時間問題
         url = f"https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_symbol}"
         
-        # 根據天數選擇適當的間隔和期間
+        # 根據天數選擇適當的間隔和期間（使用Yahoo Finance API支援的有效組合）
         if days <= 3:
             params = {
-                'range': '5d',
-                'interval': '15m',  # 15分鐘間隔
+                'range': '5d',      # 使用5天範圍確保有足夠資料
+                'interval': '15m',  # 15分鐘間隔（30m可能不穩定）
             }
         elif days <= 7:
             params = {
-                'range': '5d',
-                'interval': '30m',  # 30分鐘間隔
+                'range': '1mo',     # 改為1個月範圍
+                'interval': '1h',   # 1小時間隔
             }
         elif days <= 14:
             params = {
-                'range': '1mo',
-                'interval': '1h',  # 1小時間隔
+                'range': '1mo',     # 使用1個月範圍，但會在後面過濾到14天
+                'interval': '1d',   # 1天間隔是最安全的選擇
             }
         else:
             params = {
                 'range': '1mo',
-                'interval': '1d',  # 1天間隔
+                'interval': '1d',   # 1天間隔
             }
         
         resp = requests.get(url, params=params, timeout=CONFIG['timeout'], headers=HEADERS)
@@ -763,6 +763,10 @@ def get_stock_chart_data(stock_code, days=7):
         chart_data = []
         close_prices = quotes.get('close', [])
         
+        # 計算時間範圍：只取指定天數的資料
+        now = datetime.now()
+        start_time = now - timedelta(days=days)
+        
         for i, timestamp in enumerate(timestamps):
             if i < len(close_prices):
                 close_price = close_prices[i]
@@ -770,11 +774,15 @@ def get_stock_chart_data(stock_code, days=7):
                 if close_price is not None and str(close_price).lower() != 'nan' and close_price > 0:
                     try:
                         dt = datetime.fromtimestamp(timestamp)
-                        chart_data.append({
-                            'time': dt.strftime('%Y-%m-%d %H:%M'),
-                            'price': round(float(close_price), 2),
-                            'timestamp': timestamp
-                        })
+                        
+                        # 只保留指定天數內的資料
+                        if dt >= start_time:
+                            chart_data.append({
+                                'time': dt.strftime('%Y-%m-%d %H:%M'),
+                                'price': round(float(close_price), 2),
+                                'timestamp': timestamp,
+                                'datetime': dt  # 添加 datetime 物件方便後續處理
+                            })
                     except (ValueError, OSError) as e:
                         # 時間戳轉換失敗，跳過這筆資料
                         print(f"時間戳轉換錯誤: {timestamp}, {e}")
@@ -782,6 +790,11 @@ def get_stock_chart_data(stock_code, days=7):
         
         # 按時間排序
         chart_data.sort(key=lambda x: x['timestamp'])
+        
+        # 移除 datetime 物件（JSON 序列化時會出錯）
+        for item in chart_data:
+            if 'datetime' in item:
+                del item['datetime']
         
         return {
             'success': True,
