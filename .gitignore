@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.pyo
+*.key
+*.pem
+.env
+.env.local
+config/secrets.json
+config/*key*

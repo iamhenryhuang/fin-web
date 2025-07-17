@@ -1,0 +1,732 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "testuser123",
+      "email": "test@example.com",
+      "password_hash": "scrypt:32768:8:1$nmCaxQ6KlMZlqlzV$1504c451b4d6c69d4e953ad96df0d4ca22ab5a34b1067d0abe6dfc4d092dd730107eba470417609f5e7bdfad3cdca329f513e1f7355e1d32959c66bdba9a01b2",
+      "full_name": "測試用戶",
+      "phone": "0912345678",
+      "membership_level": "free",
+      "created_at": "2025-07-11 03:29:32.339946",
+      "last_login": "2025-07-11 03:29:32.553964",
+      "is_active": 1
+    },
+    {
+      "id": 2,
+      "username": "test",
+      "email": "user@gmail.com",
+      "password_hash": "scrypt:32768:8:1$y5VMNKOTU5wXA17R$7b2ab6f0f82e842a9611eab5026b08e9d7746f50847bdad8ddf834ae519493d84aec41224fc9666930275f886ca0d28ca4a05b98d182446a8835108507b09062",
+      "full_name": "",
+      "phone": "",
+      "membership_level": "free",
+      "created_at": "2025-07-11 03:29:57.440990",
+      "last_login": "2025-07-17 04:02:21.987021",
+      "is_active": 1
+    }
+  ],
+  "watchlists": [],
+  "search_history": [
+    {
+      "id": 1,
+      "user_id": null,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.54,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:17:29.717387"
+    },
+    {
+      "id": 2,
+      "user_id": null,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.54,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:17:37.001085"
+    },
+    {
+      "id": 3,
+      "user_id": null,
+      "stock_code": "2317",
+      "stock_name": "鴻海",
+      "search_price": 162.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:19:33.961937"
+    },
+    {
+      "id": 4,
+      "user_id": null,
+      "stock_code": "0056",
+      "stock_name": "元大高股息",
+      "search_price": 35.18,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:22:15.934593"
+    },
+    {
+      "id": 5,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1095.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:22:40.039700"
+    },
+    {
+      "id": 6,
+      "user_id": null,
+      "stock_code": "0056",
+      "stock_name": "元大高股息",
+      "search_price": 35.19,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:29:20.692432"
+    },
+    {
+      "id": 7,
+      "user_id": 2,
+      "stock_code": "2317",
+      "stock_name": "鴻海",
+      "search_price": 162.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:31:06.442654"
+    },
+    {
+      "id": 8,
+      "user_id": 2,
+      "stock_code": "2317",
+      "stock_name": "鴻海",
+      "search_price": 162.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:31:10.525617"
+    },
+    {
+      "id": 9,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1095.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:31:39.142427"
+    },
+    {
+      "id": 10,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1095.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:32:34.688450"
+    },
+    {
+      "id": 11,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1095.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:40:44.833145"
+    },
+    {
+      "id": 12,
+      "user_id": 2,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.57,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:40:54.858167"
+    },
+    {
+      "id": 13,
+      "user_id": 2,
+      "stock_code": "006208",
+      "stock_name": "富邦台50",
+      "search_price": 115.95,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 03:41:03.087929"
+    },
+    {
+      "id": 14,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:11:24.191643"
+    },
+    {
+      "id": 15,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:21:46.608569"
+    },
+    {
+      "id": 16,
+      "user_id": 2,
+      "stock_code": "0056",
+      "stock_name": "元大高股息",
+      "search_price": 35.2,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:22:57.368358"
+    },
+    {
+      "id": 17,
+      "user_id": 2,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:23:08.174528"
+    },
+    {
+      "id": 18,
+      "user_id": 2,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:23:23.088399"
+    },
+    {
+      "id": 19,
+      "user_id": 2,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:23:36.180964"
+    },
+    {
+      "id": 20,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:23:40.837245"
+    },
+    {
+      "id": 21,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:23:55.945303"
+    },
+    {
+      "id": 22,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:24:22.346297"
+    },
+    {
+      "id": 23,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:24:37.100953"
+    },
+    {
+      "id": 24,
+      "user_id": 2,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:24:41.074518"
+    },
+    {
+      "id": 25,
+      "user_id": 2,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:25:03.408081"
+    },
+    {
+      "id": 26,
+      "user_id": 2,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:25:04.294811"
+    },
+    {
+      "id": 27,
+      "user_id": 2,
+      "stock_code": "0056",
+      "stock_name": "元大高股息",
+      "search_price": 35.2,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:26:16.055841"
+    },
+    {
+      "id": 28,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:27:23.296902"
+    },
+    {
+      "id": 29,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-11 17:28:02.938830"
+    },
+    {
+      "id": 30,
+      "user_id": null,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:24:39.686038"
+    },
+    {
+      "id": 31,
+      "user_id": null,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:28:40.637891"
+    },
+    {
+      "id": 32,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:29:52.869900"
+    },
+    {
+      "id": 33,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:33:59.331315"
+    },
+    {
+      "id": 34,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:41:51.643060"
+    },
+    {
+      "id": 35,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:42:02.970974"
+    },
+    {
+      "id": 36,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:42:25.397208"
+    },
+    {
+      "id": 37,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:42:27.862350"
+    },
+    {
+      "id": 38,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:54:49.068471"
+    },
+    {
+      "id": 39,
+      "user_id": 2,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:55:15.861827"
+    },
+    {
+      "id": 40,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 05:56:43.296005"
+    },
+    {
+      "id": 41,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:01:31.359416"
+    },
+    {
+      "id": 42,
+      "user_id": 2,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:01:38.627207"
+    },
+    {
+      "id": 43,
+      "user_id": 2,
+      "stock_code": "006208",
+      "stock_name": "富邦台50",
+      "search_price": 116.25,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:02:11.384370"
+    },
+    {
+      "id": 44,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:21:38.889939"
+    },
+    {
+      "id": 45,
+      "user_id": null,
+      "stock_code": "00919",
+      "stock_name": "群益台灣精選高息",
+      "search_price": 21.48,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:25:52.465350"
+    },
+    {
+      "id": 46,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:26:33.965284"
+    },
+    {
+      "id": 47,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:28:03.996388"
+    },
+    {
+      "id": 48,
+      "user_id": null,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:31:20.178192"
+    },
+    {
+      "id": 49,
+      "user_id": null,
+      "stock_code": "006208",
+      "stock_name": "富邦台50",
+      "search_price": 116.25,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:31:41.777474"
+    },
+    {
+      "id": 50,
+      "user_id": null,
+      "stock_code": "006208",
+      "stock_name": "富邦台50",
+      "search_price": 116.25,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:33:03.189470"
+    },
+    {
+      "id": 51,
+      "user_id": null,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:36:07.146031"
+    },
+    {
+      "id": 52,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:37:47.198760"
+    },
+    {
+      "id": 53,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:43:06.935477"
+    },
+    {
+      "id": 54,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:43:23.592525"
+    },
+    {
+      "id": 55,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:44:38.673928"
+    },
+    {
+      "id": 56,
+      "user_id": null,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:47:22.701906"
+    },
+    {
+      "id": 57,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:47:43.827717"
+    },
+    {
+      "id": 58,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:51:48.060295"
+    },
+    {
+      "id": 59,
+      "user_id": null,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:52:12.318445"
+    },
+    {
+      "id": 60,
+      "user_id": null,
+      "stock_code": "0050",
+      "stock_name": "元大台灣50",
+      "search_price": 49.62,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 06:54:07.497541"
+    },
+    {
+      "id": 61,
+      "user_id": null,
+      "stock_code": "00919",
+      "stock_name": "群益台灣精選高息",
+      "search_price": 21.48,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 07:07:25.746083"
+    },
+    {
+      "id": 62,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 07:22:04.796041"
+    },
+    {
+      "id": 63,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1100.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 07:22:30.666638"
+    },
+    {
+      "id": 64,
+      "user_id": null,
+      "stock_code": "0056",
+      "stock_name": "元大高股息",
+      "search_price": 35.2,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 07:41:18.129177"
+    },
+    {
+      "id": 65,
+      "user_id": null,
+      "stock_code": "0056",
+      "stock_name": "元大高股息",
+      "search_price": 35.2,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-12 07:44:31.720357"
+    },
+    {
+      "id": 66,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1120.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-16 02:37:28.735497"
+    },
+    {
+      "id": 67,
+      "user_id": null,
+      "stock_code": "2317",
+      "stock_name": "鴻海",
+      "search_price": 163.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-16 02:37:50.218353"
+    },
+    {
+      "id": 68,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1125.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-16 02:46:47.235837"
+    },
+    {
+      "id": 69,
+      "user_id": null,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1125.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-17 04:01:39.462806"
+    },
+    {
+      "id": 70,
+      "user_id": 2,
+      "stock_code": "2330",
+      "stock_name": "台積電",
+      "search_price": 1120.0,
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+      "created_at": "2025-07-17 04:32:52.280394"
+    }
+  ],
+  "price_alerts": []
+}

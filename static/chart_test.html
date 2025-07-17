@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart.js 測試</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        body { padding: 20px; font-family: Arial, sans-serif; }
+        .chart-container { width: 800px; height: 400px; margin: 20px 0; }
+        canvas { background: white; }
+    </style>
+</head>
+<body>
+    <h1>Chart.js 測試</h1>
+    <div class="chart-container">
+        <canvas id="testChart"></canvas>
+    </div>
+    
+    <script>
+        console.log('Chart.js版本:', Chart.version);
+        
+        const ctx = document.getElementById('testChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['10:00', '11:00', '12:00', '13:00', '14:00'],
+                datasets: [{
+                    label: '測試數據',
+                    data: [1000, 1050, 1020, 1080, 1060],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        
+        console.log('圖表創建成功:', chart);
+    </script>
+</body>
+</html> 
