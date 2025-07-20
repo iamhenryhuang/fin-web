@@ -6,7 +6,7 @@
   "temperature": 0.7,
   "top_k_retrieve": 3,
   "confidence_threshold": 0.3,
-  "openai_api_key": "YOUR_OPENAI_API_KEY_HERE",
+  "openai_api_key": "",
   "fallback_to_simple": true,
   "auto_update_knowledge": false,
   "knowledge_sources": {
@@ -17,5 +17,8 @@
   "logging": {
     "level": "INFO",
     "file": "logs/rag_system.log"
-  }
+  },
+  "system_prompt": "你是一個專業的台股財經助手，請根據提供的知識庫內容回答用戶的投資和財經相關問題。回答要準確、專業且易懂。如果知識庫中沒有相關資訊，請誠實說明。",
+  "enable_openai": true,
+  "enable_fallback": true
 }

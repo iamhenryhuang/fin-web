@@ -9,6 +9,10 @@ from forms import LoginForm, RegisterForm, ProfileForm, ChangePasswordForm, Watc
 import os
 import secrets
 
+# 載入環境變數
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
 
 # 全域配置

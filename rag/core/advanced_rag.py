@@ -320,53 +320,149 @@ class AdvancedRAGSystem:
         
         return response
     
-    async def query(self, question: str) -> Dict[str, Any]:
-        """主查詢介面"""
-        if not self.initialized:
-            return {
-                "answer": "RAG系統尚未初始化完成。",
-                "confidence": 0.0,
-                "sources": [],
-                "response_time": 0
-            }
+    async def query(self, message: str, context: Optional[Dict] = None) -> Dict[str, Any]:
+        """
+        查詢RAG系統
         
-        start_time = datetime.now()
-        
+        Args:
+            message: 用戶查詢
+            context: 對話上下文
+            
+        Returns:
+            包含回答、來源和信心度的字典
+        """
         try:
-            # 檢索相關文檔
-            context_docs = self.retrieve_documents(question, top_k=3)
+            # 1. 向量檢索相關文檔
+            relevant_docs = await self._retrieve_documents(message)
             
-            # 生成回答
-            answer = await self.generate_response(question, context_docs)
-            
-            # 計算信心度
-            confidence = self._calculate_confidence(context_docs)
-            
-            response_time = (datetime.now() - start_time).total_seconds()
+            # 2. 生成回答
+            if self.has_openai and relevant_docs:
+                # 使用 OpenAI 生成高品質回答
+                answer = await self._generate_with_openai(message, relevant_docs, context)
+                method = "openai_rag"
+                confidence = 0.9
+            else:
+                # 使用模板生成回答
+                answer = self._generate_with_template(message, relevant_docs)
+                method = "template_rag"
+                confidence = 0.7 if relevant_docs else 0.3
             
             return {
                 "answer": answer,
+                "sources": relevant_docs[:3],  # 前3個最相關的來源
                 "confidence": confidence,
-                "sources": [
-                    {
-                        "title": doc["title"],
-                        "similarity": doc.get("similarity_score", 0),
-                        "category": doc.get("category", "")
-                    }
-                    for doc in context_docs
-                ],
-                "response_time": response_time,
-                "method": "vector" if (self.embedding_model and self.vector_store) else "keyword"
+                "method": method,
+                "timestamp": datetime.now().isoformat()
             }
             
         except Exception as e:
-            logger.error(f"查詢處理失敗: {e}")
+            logger.error(f"RAG查詢失敗: {e}")
             return {
-                "answer": f"處理您的問題時發生錯誤: {str(e)}",
-                "confidence": 0.0,
+                "answer": f"抱歉，查詢時發生錯誤：{str(e)}",
                 "sources": [],
-                "response_time": (datetime.now() - start_time).total_seconds()
+                "confidence": 0.0,
+                "method": "error",
+                "timestamp": datetime.now().isoformat()
             }
+    
+    async def _retrieve_documents(self, query: str) -> List[Dict[str, Any]]:
+        """檢索相關文檔"""
+        if not (self.embedding_model and self.vector_store):
+            return []
+        
+        try:
+            # 生成查詢向量
+            query_vector = self.embedding_model.encode([query])
+            query_vector = np.array(query_vector).astype('float32')
+            faiss.normalize_L2(query_vector)
+            
+            # 搜索最相關的文檔
+            top_k = self.config.get('top_k_retrieve', 3)
+            scores, indices = self.vector_store.search(query_vector, top_k)
+            
+            # 構建結果
+            results = []
+            confidence_threshold = self.config.get('confidence_threshold', 0.3)
+            
+            for i, (score, idx) in enumerate(zip(scores[0], indices[0])):
+                if score > confidence_threshold and idx < len(self.document_metadata):
+                    doc = self.document_metadata[idx].copy()
+                    doc['score'] = float(score)
+                    doc['rank'] = i + 1
+                    results.append(doc)
+            
+            return results
+            
+        except Exception as e:
+            logger.error(f"文檔檢索失敗: {e}")
+            return []
+    
+    async def _generate_with_openai(self, query: str, docs: List[Dict], context: Optional[Dict] = None) -> str:
+        """使用 OpenAI 生成回答"""
+        try:
+            import openai
+            
+            # 構建上下文
+            doc_context = "\n\n".join([
+                f"來源 {i+1}：{doc['title']}\n{doc['content']}"
+                for i, doc in enumerate(docs[:3])
+            ])
+            
+            # 系統提示
+            system_prompt = self.config.get(
+                'system_prompt',
+                "你是一個專業的台股財經助手，請根據提供的知識庫內容回答用戶的投資和財經相關問題。"
+            )
+            
+            # 構建消息
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"""
+根據以下知識庫內容回答問題：
+
+{doc_context}
+
+問題：{query}
+
+請提供準確、專業且易懂的回答。如果知識庫內容不足以回答問題，請說明。
+"""}
+            ]
+            
+            # 調用 OpenAI API（新版本）
+            from openai import AsyncOpenAI
+            client = AsyncOpenAI(api_key=openai.api_key)
+            
+            response = await client.chat.completions.create(
+                model=self.config.get('openai_model', 'gpt-3.5-turbo'),
+                messages=messages,
+                max_tokens=self.config.get('max_tokens', 500),
+                temperature=self.config.get('temperature', 0.7)
+            )
+            
+            return response.choices[0].message.content.strip()
+            
+        except Exception as e:
+            logger.error(f"OpenAI 生成失敗: {e}")
+            # 回退到模板生成
+            return self._generate_with_template(query, docs)
+    
+    def _generate_with_template(self, query: str, docs: List[Dict]) -> str:
+        """使用模板生成回答（無需 API key）"""
+        if not docs:
+            return "抱歉，我在知識庫中找不到相關資訊來回答您的問題。請嘗試提出其他財經相關問題。"
+        
+        # 找到最相關的文檔
+        best_doc = docs[0]
+        
+        # 根據查詢類型選擇模板
+        if any(keyword in query for keyword in ['什麼是', '是什麼', '定義', '意思']):
+            return f"根據我的了解，{best_doc['content']}"
+        elif any(keyword in query for keyword in ['如何', '怎麼', '方法', '步驟']):
+            return f"關於您的問題，{best_doc['content']}\n\n您可以參考以上資訊來了解具體做法。"
+        elif any(keyword in query for keyword in ['為什麼', '原因', '影響']):
+            return f"這個問題的相關說明是：{best_doc['content']}"
+        else:
+            return f"根據知識庫資料：{best_doc['content']}\n\n希望這個資訊對您有幫助。"
     
     def _calculate_confidence(self, context_docs: List[Dict]) -> float:
         """計算回答信心度"""
