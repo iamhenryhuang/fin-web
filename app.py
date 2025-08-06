@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, url_for, redirect, f
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, AnonymousUserMixin
 from datetime import datetime
 from utils.twse import get_stock_basic_info, get_market_summary, get_stock_name, get_stock_chart_data
-from rag.core.chatbot import process_chat_message, process_chat_message_enhanced
+
 
 from database import db, User, Watchlist, SearchHistory, PriceAlert
 from forms import LoginForm, RegisterForm, ProfileForm, ChangePasswordForm, WatchlistForm, PriceAlertForm
@@ -348,57 +348,7 @@ def remove_from_watchlist(item_id):
     return redirect(url_for('watchlist'))
 
 
-# === 聊天機器人功能 ===
 
-@app.route('/chatbot')
-def chatbot_page():
-    """聊天機器人頁面"""
-    return render_template('chatbot.html', current_time=datetime.now())
-
-
-@app.route('/api/chat', methods=['POST'])
-def api_chat():
-    """API: 聊天機器人對話"""
-    try:
-        data = request.get_json()
-        if not data or 'message' not in data:
-            return jsonify({
-                'success': False,
-                'error': '請提供訊息內容',
-                'timestamp': datetime.now().isoformat()
-            }), 400
-        
-        user_message = data['message'].strip()
-        if not user_message:
-            return jsonify({
-                'success': False,
-                'error': '訊息不能為空',
-                'timestamp': datetime.now().isoformat()
-            }), 400
-        
-        # 處理聊天訊息（使用增強版）
-        user_id = str(current_user.id) if current_user.is_authenticated else None
-        enhanced_response = process_chat_message_enhanced(user_message, user_id)
-        
-        return jsonify({
-            'success': True,
-            'data': {
-                'user_message': user_message,
-                'bot_response': enhanced_response.get('answer', ''),
-                'response_type': enhanced_response.get('type', 'unknown'),
-                'metadata': enhanced_response.get('metadata', {}),
-                'enhanced': enhanced_response.get('enhanced', False),
-                'timestamp': datetime.now().strftime('%H:%M:%S')
-            },
-            'timestamp': datetime.now().isoformat()
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e),
-            'timestamp': datetime.now().isoformat()
-        }), 500
 
 
 # === API 端點 ===

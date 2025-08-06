@@ -25,9 +25,6 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto">
-                    <a class="nav-link" href="{{ url_for('chatbot_page') }}">
-                        <i class="bi bi-robot me-1"></i>智能助手
-                    </a>
                     {% if current_user.is_authenticated %}
                     <div class="dropdown me-3">
                         <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -172,23 +169,7 @@
             </div>
         </div>
 
-        <!-- 股票助手推薦 -->
-        <div class="row justify-content-center mb-5">
-            <div class="col-lg-8">
-                <div class="card bg-gradient-primary text-white hover-lift animate-delay-5">
-                    <div class="card-body text-center py-4">
-                        <i class="bi bi-robot fs-1 mb-3" style="animation: bounce 2s infinite;"></i>
-                        <h4 class="card-title mb-3">🤖 股票助手</h4>
-                        <p class="card-text mb-4">
-                            試試我們的智能助手！只要問「台積電今天收盤多少？」就能快速獲得答案
-                        </p>
-                        <a href="{{ url_for('chatbot_page') }}" class="btn btn-light btn-lg">
-                            <i class="bi bi-chat-dots me-2"></i>開始對話
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- 功能特色 -->
         <div class="row g-4 mb-5">
@@ -204,9 +185,9 @@
             <div class="col-md-4">
                 <div class="card h-100 text-center hover-lift animate-delay-2">
                     <div class="card-body">
-                        <i class="bi bi-robot text-info fs-1 mb-3"></i>
-                        <h5 class="card-title">智能助手</h5>
-                        <p class="card-text">自然語言查詢，輕鬆獲取股票資訊</p>
+                        <i class="bi bi-bookmark-star text-info fs-1 mb-3"></i>
+                        <h5 class="card-title">自選股管理</h5>
+                        <p class="card-text">建立專屬自選股清單，隨時關注投資組合</p>
                     </div>
                 </div>
             </div>
@@ -296,6 +277,8 @@
                 observer.observe(el);
             });
         });
+
+
     </script>
 </body>
 </html>
