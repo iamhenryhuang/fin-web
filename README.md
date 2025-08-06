@@ -67,8 +67,6 @@ financial_web/
 │   │   └── __init__.py
 │
 ├── 📊 配置與資料
-│   ├── config/            # 配置文件
-│   ├── data/              # 資料文件
 │   └── cache/             # 快取文件
 │
 ├── 🌐 前端資源
@@ -85,7 +83,6 @@ financial_web/
 └── 📋 其他文件
     ├── README.md          # 專案說明
     ├── .gitignore         # Git 忽略清單
-    └── logs/              # 日誌文件
 ```
 
 ## 🌐 API 端點
@@ -153,22 +150,6 @@ python -m pytest
 # 功能測試
 python -c "from utils.twse import get_stock_basic_info; print(get_stock_basic_info('2330'))"
 ```
-
-## 📊 效能監控
-
-### 日誌系統
-
-```bash
-# 查看應用日誌
-tail -f logs/app.log      # Linux/Mac
-type logs\app.log         # Windows
-```
-
-### 系統需求
-- **CPU**：單核心即可運行
-- **記憶體**：建議 256MB+ 可用記憶體
-- **儲存空間**：100MB+ 可用空間
-- **網絡**：需要連接網際網路以獲取即時股價
 
 ## 📱 功能特色
 
