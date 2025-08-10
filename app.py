@@ -1,7 +1,12 @@
 from flask import Flask, render_template, request, jsonify, url_for, redirect, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, AnonymousUserMixin
 from datetime import datetime
+try:
+    from zoneinfo import ZoneInfo  # Python 3.9+
+except Exception:
+    ZoneInfo = None
 from utils.twse import get_stock_basic_info, get_market_summary, get_stock_name, get_stock_chart_data
+from utils.news import get_yahoo_stock_top_news
 
 
 from database import db, User, Watchlist, SearchHistory, PriceAlert
@@ -38,47 +43,140 @@ def home():
     try:
         # 獲取大盤摘要
         market_info = get_market_summary()
+        # 過濾不顯示項目：指數名稱、無效成交量
+        try:
+            filtered_market_info = {}
+            for k, v in (market_info or {}).items():
+                if k == '指數名稱':
+                    continue
+                if k == '成交量' and (v in [None, '', 'N/A', '-', '0', 0]):
+                    continue
+                filtered_market_info[k] = v
+            market_info = filtered_market_info
+        except Exception:
+            pass
         
-        # 熱門股票列表
-        popular_stocks = [
-            {'code': '2330', 'name': '台積電'},
-            {'code': '0050', 'name': '元大台灣50'},
-            {'code': '0056', 'name': '元大高股息'},
-            {'code': '006208', 'name': '富邦台50'},
-            {'code': '00878', 'name': '國泰永續高股息'},
-            {'code': '00919', 'name': '群益台灣精選高息'},
-            {'code': '2317', 'name': '鴻海'},
-            {'code': '2454', 'name': '聯發科'}
-        ]
+        # 熱門股票列表 - 使用真實API數據
+        popular_codes = ['2330', '0050', '0056', '006208', '2317', '2454', '2412', '00878']
+        popular_stocks = []
         
+        for code in popular_codes:
+            try:
+                stock_info = get_stock_basic_info(code)
+                if stock_info and not stock_info.get('錯誤'):
+                    popular_stocks.append({
+                        'code': code,
+                        'name': stock_info.get('股票名稱', get_stock_name(code)),
+                        'price': stock_info.get('收盤價', stock_info.get('即時股價', 'N/A')),
+                        'change': stock_info.get('漲跌價差', 'N/A'),
+                        'change_percent': stock_info.get('漲跌幅', 'N/A'),
+                        'volume': stock_info.get('成交量', 'N/A')
+                    })
+                else:
+                    # 如果API失敗，使用基本信息
+                    popular_stocks.append({
+                        'code': code,
+                        'name': get_stock_name(code),
+                        'price': 'N/A',
+                        'change': 'N/A',
+                        'change_percent': 'N/A',
+                        'volume': 'N/A'
+                    })
+            except Exception as stock_error:
+                print(f"獲取股票 {code} 資料失敗: {stock_error}")
+                # 添加基本信息作為備用
+                popular_stocks.append({
+                    'code': code,
+                    'name': get_stock_name(code),
+                    'price': 'N/A',
+                    'change': 'N/A',
+                    'change_percent': 'N/A',
+                    'volume': 'N/A'
+                })
+        # 市場新聞（Yahoo 熱門前3則）
+        market_news = []
+        try:
+            market_news = get_yahoo_stock_top_news(3)
+        except Exception as _:
+            market_news = []
+
+        # 台北時區時間與市場開盤狀態（週一至週五 09:00-13:30）
+        now_tpe = datetime.now(ZoneInfo('Asia/Taipei')) if ZoneInfo else datetime.now()
+        try:
+            is_weekday = now_tpe.weekday() < 5
+            open_time = now_tpe.replace(hour=9, minute=0, second=0, microsecond=0)
+            close_time = now_tpe.replace(hour=13, minute=30, second=0, microsecond=0)
+            market_open = is_weekday and open_time <= now_tpe <= close_time
+        except Exception:
+            market_open = False
+
         return render_template('home.html', 
                              market_info=market_info,
                              popular_stocks=popular_stocks,
-                             current_time=datetime.now())
+                             market_news=market_news,
+                             market_open=market_open,
+                             current_time=now_tpe)
         
     except Exception as e:
         print(f"首頁錯誤: {e}")
         return render_template('home.html', 
                              market_info={'錯誤': '無法載入大盤資訊'},
                              popular_stocks=[],
-                             current_time=datetime.now())
+                             market_news=[],
+                             market_open=False,
+                             current_time=datetime.now(ZoneInfo('Asia/Taipei')) if ZoneInfo else datetime.now())
 
 
 @app.route('/stock')
 def stock_page():
     """個股頁面"""
-    stock_code = request.args.get('code', '').strip()
-    
+    stock_code = request.args.get('code', '').strip().upper()
     if not stock_code:
         return render_template('stock.html', 
                              stock_code='',
                              stock_info=None,
                              error='請輸入股票代碼')
+
+    # 若輸入為公司名稱，嘗試找出股票代碼
+    # 僅當輸入不是純數字或英數字時才嘗試名稱查找
+    import re
     
+    # 清理輸入，移除空格和特殊字符
+    stock_code = re.sub(r'[^\w\u4e00-\u9fff]', '', stock_code)
+    
+    # 檢查是否為中文名稱，如果是則進行轉換
+    if re.search(r'[\u4e00-\u9fff]', stock_code):
+        # 反查常見股票名稱
+        name_to_code = {
+            '台積電': '2330',
+            '鴻海': '2317',
+            '聯發科': '2454',
+            '元大台灣50': '0050',
+            '元大高股息': '0056',
+            '富邦台50': '006208',
+            '國泰永續高股息': '00878',
+            '群益台灣精選高息': '00919',
+        }
+        if stock_code in name_to_code:
+            stock_code = name_to_code[stock_code]
+            print(f"✅ 中文名稱轉換: {stock_code}")
+    
+    # 檢查是否為英文名稱，如果是則進行轉換
+    elif not re.match(r'^[0-9]+$', stock_code):
+        # 英文名稱對應
+        english_to_code = {
+            'TSMC': '2330',
+            'TSMC.TW': '2330',
+            'FOXCONN': '2317',
+            'MTK': '2454',
+        }
+        if stock_code in english_to_code:
+            stock_code = english_to_code[stock_code]
+            print(f"✅ 英文名稱轉換: {stock_code}")
+
     try:
         # 獲取股票資訊
         stock_info = get_stock_basic_info(stock_code)
-        
         if stock_info and not stock_info.get('錯誤'):
             # 記錄搜尋歷史
             try:
@@ -133,6 +231,127 @@ def search_redirect():
         return redirect(url_for('stock_page', code=stock_code))
     return redirect(url_for('home'))
 
+
+@app.route('/tools/dividend', methods=['GET', 'POST'])
+def dividend_calculator():
+    """股息計算器"""
+    result = None
+    # 表單預設值
+    defaults = {
+        'price': '',
+        'annual_dividend': '',
+        'shares': '1000',
+        'growth_rate': '0',
+        'years': '1',
+        'reinvest': 'on',
+        'payout_frequency': '4'  # 年配=1、半年配=2、季配=4、月配=12（預設季配）
+    }
+
+    if request.method == 'POST':
+        def to_float(value, default=0.0):
+            try:
+                return float(str(value).replace(',', '').strip())
+            except Exception:
+                return default
+
+        def to_int(value, default=0):
+            try:
+                return int(str(value).strip())
+            except Exception:
+                return default
+
+        price = to_float(request.form.get('price'))
+        annual_dividend = to_float(request.form.get('annual_dividend'))
+        shares = to_int(request.form.get('shares'), 0)
+        growth_rate = to_float(request.form.get('growth_rate')) / 100.0  # 轉為倍數（年成長）
+        years = max(1, to_int(request.form.get('years'), 1))
+        reinvest = request.form.get('reinvest') == 'on'
+        payout_frequency = to_int(request.form.get('payout_frequency'), 1)
+        if payout_frequency not in [1, 2, 4, 12]:
+            payout_frequency = 1
+
+        # 更新預設值回填
+        defaults.update({
+            'price': request.form.get('price', ''),
+            'annual_dividend': request.form.get('annual_dividend', ''),
+            'shares': request.form.get('shares', ''),
+            'growth_rate': request.form.get('growth_rate', ''),
+            'years': request.form.get('years', ''),
+            'reinvest': 'on' if reinvest else '',
+            'payout_frequency': str(payout_frequency)
+        })
+
+        if price > 0 and annual_dividend >= 0 and shares >= 0:
+            # 當年殖利率（以年化股利 / 價格）
+            div_yield = (annual_dividend / price) * 100 if price > 0 else 0
+
+            # 年度模擬（支援配息頻率，年/半年/季/月）
+            current_shares = shares
+            current_annual_dividend = annual_dividend
+            total_dividends = 0.0
+            yearly = []
+
+            for year in range(1, years + 1):
+                year_cash = 0.0
+                year_added = 0
+                period_div_per_share = current_annual_dividend / payout_frequency if payout_frequency > 0 else current_annual_dividend
+
+                for _ in range(payout_frequency):
+                    cash = current_shares * period_div_per_share
+                    year_cash += cash
+                    if reinvest and price > 0:
+                        added = int(cash // price)
+                        if added > 0:
+                            current_shares += added
+                            year_added += added
+
+                total_dividends += year_cash
+
+                yearly.append({
+                    'year': year,
+                    'dividend_per_share': round(current_annual_dividend, 4),
+                    'cash_dividend': round(year_cash, 2),
+                    'added_shares': year_added,
+                    'ending_shares': current_shares
+                })
+
+                # 年度成長率（年化）
+                current_annual_dividend = current_annual_dividend * (1 + growth_rate)
+
+            result = {
+                'yield_percent': round(div_yield, 2),
+                'total_dividends': round(total_dividends, 2),
+                'final_shares': current_shares,
+                'years': years,
+                'yearly': yearly,
+                'payout_frequency': payout_frequency,
+            }
+
+    return render_template('tools/dividend_calculator.html', defaults=defaults, result=result)
+
+
+@app.route('/tools/allocation')
+def allocation_tool():
+    """資產配置工具"""
+    return render_template('tools/allocation.html')
+
+
+@app.route('/tools/ta')
+def technical_analysis_tool():
+    """技術分析工具"""
+    return render_template('tools/ta.html')
+
+
+@app.route('/tools/dca')
+def dca_tool():
+    """定期定額試算器"""
+    return render_template('tools/dca.html')
+
+
+@app.route('/tools/ai')
+def ai_price_prediction_tool():
+    """AI 股價預測（趨勢外推版）"""
+    return render_template('tools/ai.html')
 
 # === 會員系統路由 ===
 
@@ -469,6 +688,59 @@ def api_popular():
             'error': str(e),
             'timestamp': datetime.now().isoformat()
         }), 500
+
+
+@app.route('/api/watchlist/add', methods=['POST'])
+@login_required
+def api_add_to_watchlist():
+    """API: 加入自選股"""
+    try:
+        data = request.get_json()
+        stock_code = data.get('stock_code', '').strip().upper()
+        
+        if not stock_code:
+            return jsonify({
+                'success': False,
+                'message': '股票代碼不能為空'
+            })
+        
+        # 檢查是否已存在
+        existing = db.session.query(Watchlist).filter_by(
+            user_id=current_user.id,
+            stock_code=stock_code
+        ).first()
+        
+        if existing:
+            return jsonify({
+                'success': False,
+                'message': '該股票已在自選股中'
+            })
+        
+        # 獲取股票名稱
+        from utils.twse import get_stock_name
+        stock_name = get_stock_name(stock_code)
+        
+        # 添加到自選股
+        watchlist_item = Watchlist(
+            user_id=current_user.id,
+            stock_code=stock_code,
+            stock_name=stock_name
+        )
+        db.session.add(watchlist_item)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'{stock_name} 已加入自選股'
+        })
+        
+    except Exception as e:
+        print(f"加入自選股錯誤: {e}")
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': '操作失敗，請稍後再試'
+        })
 
 
 

@@ -15,66 +15,103 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- 自定義樣式 -->
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <!-- 增強的UI樣式 -->
+    <link href="{{ url_for('static', filename='enhanced-ui.css') }}" rel="stylesheet">
+    <!-- 移動端響應式樣式 -->
+    <link href="{{ url_for('static', filename='mobile-responsive.css') }}" rel="stylesheet">
 </head>
 <body>
     
-    <!-- 導航列 -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('home') }}">
-                <i class="bi bi-graph-up me-2"></i>台股資訊
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav ms-auto">
-                    
+    <!-- 增強的導航列 -->
+    <nav class="enhanced-navbar">
+        <div class="container-fluid">
+            <div class="enhanced-navbar-content">
+                <!-- 品牌標誌 -->
+                <div class="enhanced-navbar-brand">
+                    <a href="{{ url_for('home') }}" class="brand-link">
+                        <div class="brand-icon">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <div class="brand-text">
+                            <span class="brand-name">Taiwan Stock</span>
+                            <span class="brand-subtitle">Pro</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- 股票資訊顯示區域 -->
+                <div class="enhanced-navbar-info d-none d-lg-flex">
+                    {% if stock_info %}
+                    <div class="stock-info-display">
+                        <span class="stock-code-badge">{{ stock_code }}</span>
+                        <span class="stock-name">{{ stock_info.get('股票名稱', '未知股票') }}</span>
+                        <span class="stock-price {% if stock_info.get('漲跌價差', '').startswith('+') %}text-enhanced-success{% elif stock_info.get('漲跌價差', '').startswith('-') %}text-enhanced-danger{% else %}text-enhanced-muted{% endif %}">
+                            {{ stock_info.get('即時股價', stock_info.get('收盤價', 'N/A')) }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- 用戶選單 -->
+                <div class="enhanced-navbar-user">
                     {% if current_user.is_authenticated %}
-                    <div class="dropdown me-3">
-                        <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle me-1"></i>{{ current_user.username }}
+                    <div class="user-menu-enhanced">
+                        <button class="user-menu-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            <div class="user-info d-none d-md-block">
+                                <span class="user-name">{{ current_user.username }}</span>
                             {% if current_user.is_vip() %}
-                            <span class="badge bg-warning text-dark ms-1">VIP</span>
+                                <span class="user-badge badge-vip">VIP</span>
                             {% elif current_user.is_premium() %}
-                            <span class="badge bg-primary ms-1">會員</span>
+                                <span class="user-badge badge-premium">會員</span>
                             {% endif %}
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
-                                <i class="bi bi-speedometer2 me-2"></i>控制台
+                            </div>
+                            <i class="bi bi-chevron-down ms-2"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end user-dropdown-enhanced">
+                            <li><a class="dropdown-item-enhanced" href="{{ url_for('dashboard') }}">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>控制台</span>
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('watchlist') }}">
-                                <i class="bi bi-bookmark-star me-2"></i>自選股
+                            <li><a class="dropdown-item-enhanced" href="{{ url_for('watchlist') }}">
+                                <i class="bi bi-bookmark-star"></i>
+                                <span>自選股</span>
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">
-                                <i class="bi bi-person me-2"></i>個人資料
+                            <li><a class="dropdown-item-enhanced" href="{{ url_for('profile') }}">
+                                <i class="bi bi-person"></i>
+                                <span>個人資料</span>
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">
-                                <i class="bi bi-box-arrow-right me-2"></i>登出
+                            <li><a class="dropdown-item-enhanced" href="{{ url_for('logout') }}">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>登出</span>
                             </a></li>
                         </ul>
                     </div>
                     {% else %}
-                    <div class="me-3">
-                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm me-2">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>登入
+                    <div class="auth-buttons">
+                        <a href="{{ url_for('login') }}" class="btn-enhanced btn-enhanced-ghost btn-enhanced-sm">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            <span>登入</span>
                         </a>
-                        <a href="{{ url_for('register') }}" class="btn btn-light btn-sm">
-                            <i class="bi bi-person-plus me-1"></i>註冊
+                        <a href="{{ url_for('register') }}" class="btn-enhanced btn-enhanced-primary btn-enhanced-sm">
+                            <i class="bi bi-person-plus"></i>
+                            <span>註冊</span>
                         </a>
                     </div>
                     {% endif %}
-                    <a href="{{ url_for('home') }}" class="btn btn-outline-light btn-sm me-3">
-                        <i class="bi bi-house me-1"></i>返回首頁
+                    
+                    <a href="{{ url_for('home') }}" class="btn-enhanced btn-enhanced-ghost btn-enhanced-sm">
+                        <i class="bi bi-arrow-left"></i>
+                        <span class="d-none d-md-inline">返回首頁</span>
                     </a>
-                    <span class="navbar-text">
-                        <i class="bi bi-clock me-1"></i>
-                        {% if current_time %}{{ current_time.strftime('%Y-%m-%d %H:%M') }}{% endif %}
-                    </span>
+                    
                 </div>
             </div>
         </div>
@@ -82,39 +119,63 @@
 
     <div class="container my-4 page-content">
         
-        <!-- 搜尋區域 -->
-        <div class="row justify-content-center mb-4">
-            <div class="col-lg-8">
-                <div class="search-container animate-delay-1">
-                    <form action="{{ url_for('stock_page') }}" method="GET">
-                        <div class="input-group">
-                            <input type="text" 
-                                   name="code" 
-                                   class="form-control" 
-                                   placeholder="輸入股票代號查詢" 
-                                   value="{{ stock_code if stock_code else '' }}"
-                                   required
-                                   pattern="[0-9A-Za-z]{3,10}"
-                                   title="請輸入3-10位數字或字母的股票代碼">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-search me-1"></i>查詢
-                            </button>
+                <!-- 增強的搜尋區域 -->
+        <div class="container my-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="search-enhanced animate-slide-in-up">
+                        <form action="{{ url_for('stock_page') }}" method="GET" class="search-enhanced-form">
+                            <div class="search-enhanced-wrapper shadow-lg" style="box-shadow: 0 4px 24px 0 rgba(37,99,235,0.10);">
+                                <div class="search-enhanced-icon">
+                                    <i class="bi bi-search"></i>
+                                </div>
+                                <input type="text"
+                                       name="code"
+                                       class="search-enhanced-input"
+                                       placeholder="搜尋股票代號或公司名稱 (如: 2330, 台積電)"
+                                       value="{{ stock_code if stock_code else '' }}"
+                                       required
+                                       pattern="[0-9A-Za-z\u4e00-\u9fff]{1,20}"
+                                       title="請輸入股票代號或公司名稱"
+                                       autocomplete="off"
+                                       aria-label="股票搜尋">
+                                <button type="button" class="search-enhanced-clear" onclick="clearSearch()" aria-label="清除搜尋" style="display: block;">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                                <button type="submit" class="search-enhanced-submit">
+                                    <i class="bi bi-search"></i>
+                                    <span>查詢</span>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- 搜尋提示 -->
+                        <div class="search-enhanced-hints">
+                            <div class="search-hint-item">
+                                <span class="search-hint-label"><i class="bi bi-lightning-charge text-warning"></i> 快速查詢：</span>
+                                <a href="?code=2330" class="search-hint-link"><i class="bi bi-caret-right-fill"></i> 2330 台積電</a>
+                                <a href="?code=0050" class="search-hint-link"><i class="bi bi-caret-right-fill"></i> 0050 元大台灣50</a>
+                                <a href="?code=0056" class="search-hint-link"><i class="bi bi-caret-right-fill"></i> 0056 元大高股息</a>
+                                <a href="?code=2317" class="search-hint-link"><i class="bi bi-caret-right-fill"></i> 2317 鴻海</a>
+                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
 
         {% if error %}
-        <!-- 錯誤訊息 -->
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="alert alert-warning animate-delay-2">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-exclamation-triangle me-3 fs-4"></i>
-                        <div>
-                            <h6 class="alert-heading mb-1">查詢失敗</h6>
-                            <p class="mb-0">{{ error }}</p>
+                <!-- 錯誤訊息 -->
+        <div class="container my-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="alert alert-enhanced alert-enhanced-warning animate-fade-in" role="alert">
+                        <div class="alert-enhanced-icon">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div class="alert-enhanced-content">
+                            <h6 class="alert-enhanced-title">查詢失敗</h6>
+                            <p class="alert-enhanced-message">{{ error }}</p>
                         </div>
                     </div>
                 </div>
@@ -124,145 +185,211 @@
         {% elif stock_info %}
         <!-- 股票資訊展示 -->
         
-        <!-- 股票標題 -->
-        <div class="stock-header mb-4 animate-delay-2">
+        <!-- 股票標題區域 -->
+        <div class="container my-4">
+            <div class="stock-header-enhanced animate-slide-in-up">
             <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h1 class="stock-title mb-2">
-                        <span class="stock-code me-3">{{ stock_code }}</span>
-                        {{ stock_info.get('股票名稱', '未知股票') }}
+                    <div class="col-lg-8">
+                        <div class="stock-title-section">
+                            <div class="stock-title-main">
+                                <h1 class="stock-title-enhanced">
+                                    <span class="stock-code-enhanced">{{ stock_code }}</span>
+                                    <span class="stock-name-enhanced">{{ stock_info.get('股票名稱', '未知股票') }}</span>
                     </h1>
-                    <p class="mb-0 opacity-75">
-                        <i class="bi bi-database me-1"></i>
-                        資料來源：多重 API
+                                <div class="stock-meta-enhanced">
+                                    <span class="meta-item">
+                                        <i class="bi bi-database"></i>
+                                        <span>多重數據源</span>
+                                    </span>
                         {% if stock_info.get('來源') %}
-                        <span class="ms-3">
-                            <i class="bi bi-check-circle me-1"></i>
-                            {{ stock_info['來源'] }}
+                                    <span class="meta-item">
+                                        <i class="bi bi-check-circle"></i>
+                                        <span>{{ stock_info['來源'] }}</span>
                         </span>
                         {% endif %}
-                    </p>
+                                    <span class="meta-item">
+                                        <i class="bi bi-clock"></i>
+                                        <span>即時更新</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <div class="d-flex justify-content-end align-items-center gap-2">
+                    <div class="col-lg-4">
+                        <div class="stock-actions-enhanced">
                         {% if current_user.is_authenticated %}
                         {% if in_watchlist %}
-                        <span class="text-success d-flex align-items-center">
-                            <i class="bi bi-bookmark-star-fill me-1"></i>已在自選股
-                        </span>
+                            <div class="watchlist-status">
+                                <i class="bi bi-bookmark-star-fill"></i>
+                                <span>已在自選股</span>
+                            </div>
                         {% else %}
                         <form method="POST" action="{{ url_for('add_to_watchlist') }}" class="d-inline">
                             <input type="hidden" name="stock_code" value="{{ stock_code }}">
-                            <button type="submit" class="btn btn-warning">
-                                <i class="bi bi-bookmark-star me-1"></i>加入自選
+                                <button type="submit" class="btn-enhanced btn-enhanced-warning">
+                                    <i class="bi bi-bookmark-star"></i>
+                                    <span>加入自選</span>
                             </button>
                         </form>
                         {% endif %}
                         {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-warning" title="登入後可使用自選股功能">
-                            <i class="bi bi-bookmark-star me-1"></i>加入自選
+                            <a href="{{ url_for('login') }}" class="btn-enhanced btn-enhanced-warning" title="登入後可使用自選股功能">
+                                <i class="bi bi-bookmark-star"></i>
+                                <span>加入自選</span>
                         </a>
                         {% endif %}
-                        <button class="btn btn-outline-light" onclick="refreshStock()">
-                            <i class="bi bi-arrow-clockwise me-1"></i>重新整理
+                            
+                            <button class="btn-enhanced btn-enhanced-secondary" onclick="refreshStock()">
+                                <i class="bi bi-arrow-clockwise"></i>
+                                <span>重新整理</span>
                         </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 主要價格資訊 -->
-        <div class="row g-4 mb-4">
-            <div class="col-lg-3">
-                <div class="price-card realtime hover-lift animate-delay-1">
-                    <div class="price-label">
-                        <i class="bi bi-lightning-fill me-1"></i>即時股價
-                    </div>
-                    <div class="price-value text-success">
-                        {{ stock_info.get('即時股價', stock_info.get('收盤價', 'N/A')) | format_price }}
-                    </div>
-                    {% if stock_info.get('幣別') %}
-                    <small class="text-muted">{{ stock_info['幣別'] }}</small>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-lg-3">
-                <div class="price-card close hover-lift animate-delay-2">
-                    <div class="price-label">收盤價</div>
-                    <div class="price-value text-primary">
-                        {{ stock_info.get('收盤價', 'N/A') | format_price }}
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3">
-                <div class="price-card hover-lift animate-delay-3 {% if stock_info.get('漲跌價差', '').startswith('-') %}change-negative{% elif stock_info.get('漲跌價差', '').startswith('+') %}change-positive{% endif %}">
-                    <div class="price-label">漲跌價差</div>
-                    <div class="price-value {{ stock_info.get('漲跌價差', '') | change_class }}">
-                        {{ stock_info.get('漲跌價差', 'N/A') }}
+                <div class="container my-4">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="data-card-enhanced animate-slide-in-up">
+                        <div class="data-label-enhanced">
+                            <i class="bi bi-lightning-fill"></i>
+                            即時股價
+                        </div>
+                        <div class="data-value-enhanced">
+                            {{ stock_info.get('即時股價', stock_info.get('收盤價', 'N/A')) }}
+                        </div>
+                        {% if stock_info.get('幣別') %}
+                        <div class="data-change-enhanced data-change-neutral">
+                            <i class="bi bi-currency-dollar"></i>
+                            <span>{{ stock_info['幣別'] }}</span>
+                        </div>
+                        {% else %}
+                        <div class="data-change-enhanced data-change-neutral" style="visibility: hidden;">
+                            <i class="bi bi-dash"></i>
+                            <span>-</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3">
-                <div class="price-card hover-lift animate-delay-4 {% if stock_info.get('漲跌幅', '').startswith('-') %}change-negative{% elif stock_info.get('漲跌幅', '').startswith('+') %}change-positive{% endif %}">
-                    <div class="price-label">漲跌幅</div>
-                    <div class="price-value {{ stock_info.get('漲跌幅', '') | change_class }}">
-                        {{ stock_info.get('漲跌幅', 'N/A') }}
+                <div class="col-lg-3 col-md-6">
+                    <div class="data-card-enhanced animate-slide-in-up">
+                        <div class="data-label-enhanced">收盤價</div>
+                        <div class="data-value-enhanced">
+                            {{ stock_info.get('收盤價', 'N/A') }}
+                        </div>
+                        <div class="data-change-enhanced data-change-neutral">
+                            <i class="bi bi-clock-history"></i>
+                            <span>昨日收盤</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="data-card-enhanced animate-slide-in-up">
+                        <div class="data-label-enhanced">漲跌價差</div>
+                        <div class="data-value-enhanced">
+                            {{ stock_info.get('漲跌價差', 'N/A') }}
+                        </div>
+                        <div class="data-change-enhanced {% if stock_info.get('漲跌價差', '').startswith('-') %}data-change-negative{% elif stock_info.get('漲跌價差', '').startswith('+') %}data-change-positive{% else %}data-change-neutral{% endif %}">
+                            {% if stock_info.get('漲跌價差', '').startswith('-') %}
+                                <i class="bi bi-trending-down"></i>
+                            {% elif stock_info.get('漲跌價差', '').startswith('+') %}
+                                <i class="bi bi-trending-up"></i>
+                            {% else %}
+                                <i class="bi bi-dash"></i>
+                            {% endif %}
+                            <span>價差變動</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="data-card-enhanced animate-slide-in-up">
+                        <div class="data-label-enhanced">漲跌幅</div>
+                        <div class="data-value-enhanced">
+                            {{ stock_info.get('漲跌幅', 'N/A') }}
+                        </div>
+                        <div class="data-change-enhanced {% if stock_info.get('漲跌幅', '').startswith('-') %}data-change-negative{% elif stock_info.get('漲跌幅', '').startswith('+') %}data-change-positive{% else %}data-change-neutral{% endif %}">
+                            {% if stock_info.get('漲跌幅', '').startswith('-') %}
+                                <i class="bi bi-trending-down"></i>
+                            {% elif stock_info.get('漲跌幅', '').startswith('+') %}
+                                <i class="bi bi-trending-up"></i>
+                            {% else %}
+                                <i class="bi bi-dash"></i>
+                            {% endif %}
+                            <span>百分比變動</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 股價走向圖表 -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card hover-lift animate-delay-5" style="background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.3);">
-                    <div class="card-header" style="background: rgba(255, 255, 255, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0" style="color: #ffffff; font-weight: 600; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">
-                                <i class="bi bi-graph-up-arrow me-2"></i>股價走向
+                <!-- 股價走向圖表 -->
+        <div class="container my-4">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card-enhanced animate-slide-in-up">
+                        <div class="card-enhanced-header">
+                            <h5 class="mb-0 text-enhanced-primary" style="font-size: 1.125rem; font-weight: 600;">
+                                <i class="bi bi-graph-up-arrow text-primary me-2"></i>股價走向
                             </h5>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <button type="button" class="btn btn-outline-light chart-period-btn active" data-days="3">3天</button>
-                                <button type="button" class="btn btn-outline-light chart-period-btn" data-days="7">7天</button>
-                                <button type="button" class="btn btn-outline-light chart-period-btn" data-days="14">14天</button>
-                                <button type="button" class="btn btn-outline-light chart-period-btn" data-days="30">30天</button>
+                            <div class="nav-tabs-enhanced" role="group">
+                                <button type="button" class="nav-tab-enhanced active" data-days="3">
+                                    <i class="bi bi-calendar-day"></i>
+                                    <span>3天</span>
+                                </button>
+                                <button type="button" class="nav-tab-enhanced" data-days="7">
+                                    <i class="bi bi-calendar-week"></i>
+                                    <span>7天</span>
+                                </button>
+                                <button type="button" class="nav-tab-enhanced" data-days="14">
+                                    <i class="bi bi-calendar2-week"></i>
+                                    <span>14天</span>
+                                </button>
+                                <button type="button" class="nav-tab-enhanced" data-days="30">
+                                    <i class="bi bi-calendar-month"></i>
+                                    <span>30天</span>
+                                </button>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="chart-loading" class="text-center py-4">
-                            <div class="spinner-border text-light" role="status">
-                                <span class="visually-hidden">載入中...</span>
+                        <div class="card-enhanced-body">
+                            <div id="chart-loading" class="loading-enhanced-container">
+                                <div class="loading-enhanced-spinner"></div>
+                                <p class="loading-enhanced-text">載入圖表資料中...</p>
                             </div>
-                            <p class="mt-2 mb-0 text-light">載入圖表資料中...</p>
-                        </div>
-                        <div style="position: relative; height: 400px; width: 100%;">
+                            <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
                             <canvas id="stockChart" style="display: none;"></canvas>
                         </div>
-                        <div id="chart-error" class="text-center py-4" style="display: none;">
-                            <i class="bi bi-exclamation-triangle text-warning fs-1"></i>
-                            <p class="mt-2 mb-0 text-light">無法載入圖表資料</p>
-                            <button class="btn btn-outline-light btn-sm mt-2" onclick="loadStockChart()">
-                                <i class="bi bi-arrow-clockwise me-1"></i>重新載入
+                            <div id="chart-error" class="error-enhanced-container" style="display: none;">
+                                <div class="error-enhanced-icon">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                </div>
+                                <p class="error-enhanced-text">無法載入圖表資料</p>
+                                <button class="btn-enhanced btn-enhanced-secondary btn-enhanced-sm" onclick="loadStockChart()">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                    <span>重新載入</span>
                             </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 詳細資訊 -->
-        <div class="row g-4">
+                <!-- 詳細資訊 -->
+        <div class="container my-4">
+            <div class="row g-4">
             <div class="col-lg-6">
-                <div class="card h-100 hover-lift animate-delay-5" style="background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.3);">
-                    <div class="card-header" style="background: rgba(255, 255, 255, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
-                        <h5 class="mb-0" style="color: #ffffff; font-weight: 600; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">
-                            <i class="bi bi-graph-up me-2"></i>交易資訊
+                    <div class="card-enhanced h-100 animate-slide-in-up">
+                        <div class="card-enhanced-header">
+                            <h5 class="mb-0 text-enhanced-primary" style="font-size: 1.125rem; font-weight: 600;">
+                                <i class="bi bi-graph-up text-success me-2"></i>交易資訊
                         </h5>
                     </div>
-                    <div class="card-body">
-                        <div class="professional-table">
-                            <table class="table table-borderless mb-0">
+                        <div class="card-enhanced-body p-0">
+                            <div class="table-responsive">
+                                <table class="table-enhanced">
                                 <tbody>
                                     {% set trading_items = [
                                         ('開盤價', stock_info.get('開盤價')),
@@ -276,12 +403,12 @@
                                     {% for label, value in trading_items %}
                                     {% if value and value != 'N/A' %}
                                     <tr>
-                                        <td style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">{{ label }}</td>
-                                        <td class="text-end fw-semibold monospace" style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">
+                                            <td class="text-enhanced-primary fw-medium">{{ label }}</td>
+                                            <td class="text-end fw-medium" style="font-family: var(--font-family-mono);">
                                             {% if '股數' in label or '金額' in label or '成交量' in label %}
-                                                {{ value | format_number }}
+                                                    {{ value }}
                                             {% elif '價' in label %}
-                                                {{ value | format_price }}
+                                                    {{ value }}
                                             {% else %}
                                                 {{ value }}
                                             {% endif %}
@@ -297,42 +424,52 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="card h-100 hover-lift animate-delay-5" style="background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.3);">
-                    <div class="card-header" style="background: rgba(255, 255, 255, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
-                        <h5 class="mb-0" style="color: #ffffff; font-weight: 600; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">
-                            <i class="bi bi-info-circle me-2"></i>基本資料
+                    <div class="card-enhanced h-100 animate-slide-in-up">
+                        <div class="card-enhanced-header">
+                            <h5 class="mb-0 text-enhanced-primary" style="font-size: 1.125rem; font-weight: 600;">
+                                <i class="bi bi-info-circle text-info me-2"></i>基本資料
                         </h5>
                     </div>
-                    <div class="card-body">
-                        <div class="professional-table">
-                            <table class="table table-borderless mb-0">
+                        <div class="card-enhanced-body p-0">
+                            <div class="table-responsive">
+                                <table class="table-enhanced">
                                 <tbody>
                                     <tr>
-                                        <td style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">股票代號</td>
-                                        <td class="text-end fw-semibold monospace" style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">{{ stock_code }}</td>
+                                            <td class="text-enhanced-primary fw-medium">股票代號</td>
+                                            <td class="text-end fw-medium" style="font-family: var(--font-family-mono);">
+                                                <span class="badge bg-enhanced-secondary rounded-enhanced">{{ stock_code }}</span>
+                                            </td>
                                     </tr>
                                     <tr>
-                                        <td style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">股票名稱</td>
-                                        <td class="text-end fw-semibold" style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">{{ stock_info.get('股票名稱', 'N/A') }}</td>
+                                            <td class="text-enhanced-primary fw-medium">股票名稱</td>
+                                            <td class="text-end fw-medium">{{ stock_info.get('股票名稱', 'N/A') }}</td>
                                     </tr>
                                     {% if stock_info.get('產業別') %}
                                     <tr>
-                                        <td style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">產業別</td>
-                                        <td class="text-end fw-semibold" style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">{{ stock_info['產業別'] }}</td>
+                                            <td class="text-enhanced-primary fw-medium">產業別</td>
+                                            <td class="text-end fw-medium">
+                                                <span class="badge bg-enhanced-primary rounded-enhanced">{{ stock_info['產業別'] }}</span>
+                                            </td>
                                     </tr>
                                     {% endif %}
                                     {% if stock_info.get('上市日期') %}
                                     <tr>
-                                        <td style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">上市日期</td>
-                                        <td class="text-end fw-semibold" style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">{{ stock_info['上市日期'] }}</td>
+                                            <td class="text-enhanced-primary fw-medium">上市日期</td>
+                                            <td class="text-end fw-medium" style="font-family: var(--font-family-mono);">{{ stock_info['上市日期'] }}</td>
                                     </tr>
                                     {% endif %}
                                     <tr>
-                                        <td style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">更新時間</td>
-                                        <td class="text-end fw-semibold" style="color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 4px 8px;">{{ current_time.strftime('%H:%M:%S') if current_time else 'N/A' }}</td>
+                                            <td class="text-enhanced-primary fw-medium">更新時間</td>
+                                            <td class="text-end fw-medium" style="font-family: var(--font-family-mono);">
+                                                <span class="text-enhanced-success">
+                                                    <i class="bi bi-clock-fill me-1"></i>
+                                                    {{ current_time.strftime('%H:%M:%S') if current_time else 'N/A' }}
+                                                </span>
+                                            </td>
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -383,11 +520,19 @@
             const stockCode = window.stockData.stockCode;
             const hasStockInfo = window.stockData.hasStockInfo;
             
-            const searchInput = document.querySelector('input[name="code"]');
-            
+            const searchInput = document.querySelector('.search-enhanced-input');
             if (searchInput) {
+                // 英文字母自動轉大寫，不限制其他輸入
                 searchInput.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9A-Za-z]/g, '').toUpperCase();
+                    // 只做英文轉大寫，不限制其他輸入
+                    this.value = this.value.replace(/[a-z]/g, function(s) { return s.toUpperCase(); });
+                });
+                // 搜尋增強功能
+                searchInput.addEventListener('focus', function() {
+                    this.parentElement.classList.add('search-enhanced-focused');
+                });
+                searchInput.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('search-enhanced-focused');
                 });
             }
 
@@ -446,11 +591,11 @@
                     }
                 }, 2000); // 增加等待時間
                 
-                // 圖表期間按鈕事件
-                document.querySelectorAll('.chart-period-btn').forEach(btn => {
+                // 圖表期間選項卡事件
+                document.querySelectorAll('.nav-tab-enhanced').forEach(btn => {
                     btn.addEventListener('click', function() {
                         // 更新按鈕狀態
-                        document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelectorAll('.nav-tab-enhanced').forEach(b => b.classList.remove('active'));
                         this.classList.add('active');
                         
                         // 重新載入圖表
@@ -692,12 +837,20 @@
             }
         }
 
+        function clearSearch() {
+            const searchInput = document.querySelector('.search-enhanced-input');
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
+        }
+
         function refreshStock() {
             const stockCode = window.stockData.stockCode;
             if (stockCode) {
-                const btn = event.target;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<span class="loading"></span> 載入中...';
+                const btn = event.target.closest('button');
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-arrow-clockwise"></i><span>載入中...</span>';
                 btn.disabled = true;
                 
                 setTimeout(() => {
@@ -706,5 +859,53 @@
             }
         }
     </script>
+
+    <!-- 移動端底部導航 -->
+    <div class="mobile-nav-menu d-lg-none">
+        <div class="container-fluid">
+            <div class="row text-center">
+                <div class="col">
+                    <a href="{{ url_for('home') }}" class="mobile-nav-item">
+                        <i class="bi bi-house"></i>
+                        <span>首頁</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="#" class="mobile-nav-item active" onclick="document.querySelector('.search-enhanced-input').focus()">
+                        <i class="bi bi-search"></i>
+                        <span>搜尋</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="#" class="mobile-nav-item" onclick="refreshStock()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span>刷新</span>
+                    </a>
+                </div>
+                {% if current_user.is_authenticated %}
+                <div class="col">
+                    <a href="{{ url_for('watchlist') }}" class="mobile-nav-item">
+                        <i class="bi bi-bookmark-star"></i>
+                        <span>自選</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{{ url_for('dashboard') }}" class="mobile-nav-item">
+                        <i class="bi bi-person-circle"></i>
+                        <span>我的</span>
+                    </a>
+                </div>
+                {% else %}
+                <div class="col">
+                    <a href="{{ url_for('login') }}" class="mobile-nav-item">
+                        <i class="bi bi-person"></i>
+                        <span>登入</span>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </body>
 </html>
+

@@ -3,42 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>會員控制台 | 台股資訊</title>
+    <title>投資組合 | Taiwan Stock Pro</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- JetBrains Mono Font -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- 自定義樣式 -->
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='professional-components.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='enhanced-ui.css') }}" rel="stylesheet">
 </head>
 <body>
     
-    <!-- 導航列 -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
+    <!-- 增強的專業導航列 -->
+    <nav class="enhanced-navbar navbar navbar-expand-lg">
+        <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('home') }}">
-                <i class="bi bi-graph-up me-2"></i>台股資訊
+                <i class="bi bi-graph-up brand-icon"></i>
+                <span class="brand-text">Taiwan Stock Pro</span>
             </a>
-            <div class="navbar-nav ms-auto">
-                <div class="dropdown me-3">
-                    <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle me-1"></i>{{ current_user.username }}
+            
+            <!-- 增強的導航標籤 -->
+            <div class="d-none d-lg-flex me-auto ms-4">
+                <div class="nav-tabs-enhanced">
+                    <button class="nav-tab-enhanced active">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>投資組合</span>
+                    </button>
+                    <a href="{{ url_for('watchlist') }}" class="nav-tab-enhanced">
+                        <i class="bi bi-bookmark-star"></i>
+                        <span>自選股</span>
+                    </a>
+                    <button class="nav-tab-enhanced">
+                        <i class="bi bi-clock-history"></i>
+                        <span>交易記錄</span>
+                    </button>
+                    <button class="nav-tab-enhanced">
+                        <i class="bi bi-file-text"></i>
+                        <span>研究報告</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <!-- 用戶選單 -->
+                <div class="dropdown">
+                    <a class="btn btn-secondary btn-sm dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-1"></i>
+                        <span>{{ current_user.username }}</span>
                         {% if current_user.is_vip() %}
-                        <span class="badge bg-warning text-dark ms-1">VIP</span>
+                        <span class="badge bg-warning text-dark ms-2" style="font-size: 10px;">VIP</span>
                         {% elif current_user.is_premium() %}
-                        <span class="badge bg-primary ms-1">會員</span>
+                        <span class="badge bg-primary ms-2" style="font-size: 10px;">PRO</span>
                         {% endif %}
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item active" href="{{ url_for('dashboard') }}">
-                            <i class="bi bi-speedometer2 me-2"></i>控制台
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
+                            <i class="bi bi-speedometer2 me-2"></i>投資組合
                         </a></li>
                         <li><a class="dropdown-item" href="{{ url_for('watchlist') }}">
                             <i class="bi bi-bookmark-star me-2"></i>自選股
                         </a></li>
                         <li><a class="dropdown-item" href="{{ url_for('profile') }}">
-                            <i class="bi bi-person me-2"></i>個人資料
+                            <i class="bi bi-person me-2"></i>帳戶設定
                         </a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{{ url_for('logout') }}">
@@ -46,19 +80,20 @@
                         </a></li>
                     </ul>
                 </div>
-                <a href="{{ url_for('home') }}" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-house me-1"></i>返回首頁
+                <a href="{{ url_for('home') }}" class="btn btn-secondary btn-sm ms-2">
+                    <i class="bi bi-house me-1"></i>市場
                 </a>
             </div>
         </div>
     </nav>
 
-    <div class="container my-5">
+    <!-- 主要內容區域 -->
+    <div class="container-fluid" style="padding: 24px;">
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         {% for category, message in messages %}
-        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert" style="margin-bottom: 24px;">
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -66,178 +101,255 @@
         {% endif %}
         {% endwith %}
 
-        <!-- 歡迎區域 -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card bg-primary text-white">
+        <!-- 增強的頂部統計卡片 -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="data-card-enhanced animate-slide-in-up">
+                    <div class="data-label-enhanced">總資產</div>
+                    <div class="data-value-enhanced">NT$ 1,250,000</div>
+                    <div class="data-change-enhanced data-change-positive">
+                        <i class="bi bi-trending-up"></i>
+                        <span>+15,000 (+1.22%)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="data-card-enhanced animate-slide-in-up">
+                    <div class="data-label-enhanced">今日損益</div>
+                    <div class="data-value-enhanced text-enhanced-success">NT$ +5,200</div>
+                    <div class="data-change-enhanced data-change-positive">
+                        <i class="bi bi-trending-up"></i>
+                        <span>+0.42%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="data-card-enhanced animate-slide-in-up">
+                    <div class="data-label-enhanced">持有股票</div>
+                    <div class="data-value-enhanced">{{ watchlist|length }}</div>
+                    <div class="data-change-enhanced data-change-neutral">
+                        <i class="bi bi-info-circle"></i>
+                        <span>
+                            {% if features.watchlist_limit %}
+                            限制 {{ features.watchlist_limit }} 支
+                            {% else %}
+                            無限制
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="data-card-enhanced animate-slide-in-up">
+                    <div class="data-label-enhanced">現金餘額</div>
+                    <div class="data-value-enhanced">NT$ 150,000</div>
+                    <div class="data-change-enhanced data-change-neutral">
+                        <i class="bi bi-wallet2"></i>
+                        <span>可投資金額</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要內容區 -->
+        <div class="row g-3">
+            <!-- 投資組合圖表 -->
+            <div class="col-lg-8">
+                <div class="card mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center" style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 16px;">
+                        <h5 class="mb-0" style="color: var(--text-primary); font-size: 16px; font-weight: 600;">投資組合表現</h5>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-secondary">1日</button>
+                            <button class="btn btn-sm btn-primary">1週</button>
+                            <button class="btn btn-sm btn-secondary">1月</button>
+                            <button class="btn btn-sm btn-secondary">3月</button>
+                            <button class="btn btn-sm btn-secondary">1年</button>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h4 class="mb-1">歡迎回來，{{ current_user.username }}！</h4>
-                                <p class="mb-0">
-                                    會員等級：
-                                    {% if current_user.is_vip() %}
-                                    <span class="badge bg-warning text-dark">VIP 會員</span>
-                                    {% elif current_user.is_premium() %}
-                                    <span class="badge bg-light text-primary">付費會員</span>
-                                    {% else %}
-                                    <span class="badge bg-light text-primary">免費會員</span>
-                                    {% endif %}
-                                </p>
+                        <div style="height: 300px; position: relative;">
+                            <canvas id="portfolioChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 資產配置圓餅圖 -->
+                <div class="card">
+                    <div class="card-header" style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 16px;">
+                        <h5 class="mb-0" style="color: var(--text-primary); font-size: 16px; font-weight: 600;">資產配置</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div style="height: 250px; position: relative;">
+                                    <canvas id="allocationChart"></canvas>
+                                </div>
                             </div>
-                            <div class="col-md-4 text-md-end">
-                                <small class="opacity-75">
-                                    <i class="bi bi-clock me-1"></i>{{ current_time.strftime('%Y-%m-%d %H:%M') }}
-                                </small>
+                            <div class="col-md-6">
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="width: 12px; height: 12px; background: var(--finance-blue); border-radius: 2px;"></div>
+                                            <span style="font-size: 13px; color: var(--text-secondary);">科技股</span>
+                                        </div>
+                                        <span style="font-size: 13px; color: var(--text-primary); font-family: var(--font-numbers);">45%</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="width: 12px; height: 12px; background: var(--market-green); border-radius: 2px;"></div>
+                                            <span style="font-size: 13px; color: var(--text-secondary);">金融股</span>
+                                        </div>
+                                        <span style="font-size: 13px; color: var(--text-primary); font-family: var(--font-numbers);">25%</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="width: 12px; height: 12px; background: var(--market-orange); border-radius: 2px;"></div>
+                                            <span style="font-size: 13px; color: var(--text-secondary);">ETF</span>
+                                        </div>
+                                        <span style="font-size: 13px; color: var(--text-primary); font-family: var(--font-numbers);">20%</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="width: 12px; height: 12px; background: var(--yahoo-purple); border-radius: 2px;"></div>
+                                            <span style="font-size: 13px; color: var(--text-secondary);">其他</span>
+                                        </div>
+                                        <span style="font-size: 13px; color: var(--text-primary); font-family: var(--font-numbers);">10%</span>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 側邊欄 -->
+            <div class="col-lg-4">
+                <!-- 市場概況 -->
+                <div class="card mb-3">
+                    <div class="card-header" style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 16px;">
+                        <h5 class="mb-0" style="color: var(--text-primary); font-size: 16px; font-weight: 600;">
+                            <i class="bi bi-graph-up me-2"></i>市場概況
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center p-3 border-bottom" style="border-color: var(--border-color);">
+                                <span style="font-size: 13px; color: var(--text-secondary);">台股指數</span>
+                                <div class="text-end">
+                                    <div style="font-size: 14px; color: var(--text-primary); font-family: var(--font-numbers);">17,250</div>
+                                    <div style="font-size: 12px; color: var(--market-green);">+125 (+0.73%)</div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center p-3 border-bottom" style="border-color: var(--border-color);">
+                                <span style="font-size: 13px; color: var(--text-secondary);">台積電</span>
+                                <div class="text-end">
+                                    <div style="font-size: 14px; color: var(--text-primary); font-family: var(--font-numbers);">625</div>
+                                    <div style="font-size: 12px; color: var(--market-red);">-5 (-0.79%)</div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center p-3">
+                                <span style="font-size: 13px; color: var(--text-secondary);">美元/台幣</span>
+                                <div class="text-end">
+                                    <div style="font-size: 14px; color: var(--text-primary); font-family: var(--font-numbers);">31.25</div>
+                                    <div style="font-size: 12px; color: var(--market-green);">+0.15 (+0.48%)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 功能快速入口 -->
+                <div class="card mb-3">
+                    <div class="card-header" style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 16px;">
+                        <h5 class="mb-0" style="color: var(--text-primary); font-size: 16px; font-weight: 600;">
+                            <i class="bi bi-lightning me-2"></i>快速功能
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('watchlist') }}" class="btn btn-secondary btn-sm text-start">
+                                <i class="bi bi-bookmark-star me-2"></i>管理自選股 ({{ watchlist|length }})
+                            </a>
+                            <button class="btn btn-secondary btn-sm text-start" {% if not features.price_alerts %}disabled{% endif %}>
+                                <i class="bi bi-bell me-2"></i>價格提醒
+                                {% if not features.price_alerts %}
+                                <span class="badge bg-warning text-dark ms-auto" style="font-size: 10px;">升級解鎖</span>
+                                {% endif %}
+                            </button>
+                            <button class="btn btn-secondary btn-sm text-start" {% if not features.export_data %}disabled{% endif %}>
+                                <i class="bi bi-download me-2"></i>匯出資料
+                                {% if not features.export_data %}
+                                <span class="badge bg-warning text-dark ms-auto" style="font-size: 10px;">升級解鎖</span>
+                                {% endif %}
+                            </button>
+                            <button class="btn btn-secondary btn-sm text-start">
+                                <i class="bi bi-calculator me-2"></i>投資計算器
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 功能統計 -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="bi bi-bookmark-star text-warning display-6"></i>
-                        <h5 class="mt-2">{{ watchlist|length }}</h5>
-                        <p class="text-muted mb-0">自選股數量</p>
-                        {% if features.watchlist_limit %}
-                        <small class="text-muted">限制：{{ features.watchlist_limit }}</small>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="bi bi-clock-history text-info display-6"></i>
-                        <h5 class="mt-2">{{ recent_searches|length }}</h5>
-                        <p class="text-muted mb-0">最近搜尋</p>
-                        {% if features.history_days %}
-                        <small class="text-muted">保留：{{ features.history_days }}天</small>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="bi bi-bell text-primary display-6"></i>
-                        <h5 class="mt-2">
-                            {% if features.price_alerts %}有效{% else %}無{% endif %}
-                        </h5>
-                        <p class="text-muted mb-0">價格提醒</p>
-                        <small class="text-muted">
-                            {% if features.price_alerts %}可用{% else %}升級解鎖{% endif %}
-                        </small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="bi bi-download text-success display-6"></i>
-                        <h5 class="mt-2">
-                            {% if features.export_data %}可用{% else %}無{% endif %}
-                        </h5>
-                        <p class="text-muted mb-0">資料匯出</p>
-                        <small class="text-muted">
-                            {% if features.export_data %}可用{% else %}升級解鎖{% endif %}
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <!-- 自選股概覽 -->
-            <div class="col-md-8 mb-4">
+        <!-- 持股明細表格 -->
+        <div class="row mt-4">
+            <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">
-                            <i class="bi bi-bookmark-star text-warning me-2"></i>我的自選股
-                        </h6>
-                        <a href="{{ url_for('watchlist') }}" class="btn btn-sm btn-outline-primary">
-                            查看全部
+                    <div class="card-header d-flex justify-content-between align-items-center" style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 16px;">
+                        <h5 class="mb-0" style="color: var(--text-primary); font-size: 16px; font-weight: 600;">
+                            <i class="bi bi-bookmark-star me-2"></i>持股明細
+                        </h5>
+                        <a href="{{ url_for('watchlist') }}" class="btn btn-primary btn-sm">
+                            管理自選股
                         </a>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-0">
                         {% if watchlist %}
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>股票代號</th>
-                                        <th>股票名稱</th>
-                                        <th>加入日期</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in watchlist[:5] %}
-                                    <tr>
-                                        <td>
-                                            <a href="{{ url_for('stock_page', code=item.stock_code) }}" 
-                                               class="text-decoration-none">
-                                                {{ item.stock_code }}
-                                            </a>
-                                        </td>
-                                        <td>{{ item.stock_name or '載入中...' }}</td>
-                                        <td>
-                                            <small class="text-muted">
-                                                {{ item.created_at.strftime('%m-%d') }}
-                                            </small>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                        <table class="market-data-table">
+                            <thead>
+                                <tr>
+                                    <th>代號</th>
+                                    <th>名稱</th>
+                                    <th class="text-end">現價</th>
+                                    <th class="text-end">漲跌</th>
+                                    <th class="text-end">漲跌幅</th>
+                                    <th class="text-end">成本</th>
+                                    <th class="text-end">損益</th>
+                                    <th class="text-end">權重</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in watchlist[:8] %}
+                                <tr onclick="window.location.href='{{ url_for('stock_page', code=item.stock_code) }}'" style="cursor: pointer;">
+                                    <td>
+                                        <span class="stock-symbol">{{ item.stock_code }}</span>
+                                    </td>
+                                    <td style="color: var(--text-primary);">{{ item.stock_name or '載入中...' }}</td>
+                                    <td class="text-end">
+                                        <span class="stock-price">{{ item.added_price or '--' }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="stock-change neutral">--</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="stock-change neutral">--</span>
+                                    </td>
+                                    <td class="text-end" style="color: var(--text-muted); font-family: var(--font-numbers);">{{ item.added_price or '--' }}</td>
+                                    <td class="text-end">
+                                        <span class="stock-change neutral">--</span>
+                                    </td>
+                                    <td class="text-end" style="color: var(--text-muted); font-family: var(--font-numbers);">--</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                         {% else %}
-                        <div class="text-center text-muted py-3">
-                            <i class="bi bi-bookmark display-4 opacity-25"></i>
-                            <p class="mt-2">尚未添加任何自選股</p>
-                            <a href="{{ url_for('home') }}" class="btn btn-outline-primary btn-sm">
+                        <div class="text-center py-5">
+                            <i class="bi bi-bookmark" style="font-size: 48px; color: var(--text-muted); opacity: 0.5;"></i>
+                            <p class="mt-3" style="color: var(--text-secondary);">尚未添加任何自選股</p>
+                            <a href="{{ url_for('home') }}" class="btn btn-primary btn-sm">
                                 開始搜尋股票
                             </a>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- 最近搜尋 -->
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="mb-0">
-                            <i class="bi bi-clock-history text-info me-2"></i>最近搜尋
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        {% if recent_searches %}
-                        {% for search in recent_searches %}
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div>
-                                <a href="{{ url_for('stock_page', code=search.stock_code) }}" 
-                                   class="text-decoration-none fw-semibold">
-                                    {{ search.stock_code }}
-                                </a>
-                                {% if search.stock_name %}
-                                <br><small class="text-muted">{{ search.stock_name }}</small>
-                                {% endif %}
-                            </div>
-                            <small class="text-muted">
-                                {{ search.created_at.strftime('%m-%d %H:%M') }}
-                            </small>
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                        <div class="text-center text-muted py-3">
-                            <i class="bi bi-search opacity-25"></i>
-                            <p class="mt-2 mb-0">暫無搜尋記錄</p>
                         </div>
                         {% endif %}
                     </div>
@@ -290,5 +402,171 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 圖表初始化 -->
+    <script>
+        // Chart.js 深色主題配置
+        Chart.defaults.color = '#B0B0B0';
+        Chart.defaults.borderColor = '#333333';
+        Chart.defaults.backgroundColor = 'rgba(30, 136, 229, 0.1)';
+
+        // 投資組合表現圖表
+        const portfolioCtx = document.getElementById('portfolioChart').getContext('2d');
+        const portfolioChart = new Chart(portfolioCtx, {
+            type: 'line',
+            data: {
+                labels: ['01/15', '01/16', '01/17', '01/18', '01/19', '01/22', '01/23'],
+                datasets: [{
+                    label: '投資組合價值',
+                    data: [1200000, 1215000, 1205000, 1235000, 1245000, 1250000, 1255000],
+                    borderColor: '#1E88E5',
+                    backgroundColor: 'rgba(30, 136, 229, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: '台股指數 (縮放)',
+                    data: [1180000, 1190000, 1185000, 1200000, 1210000, 1220000, 1225000],
+                    borderColor: '#808080',
+                    backgroundColor: 'rgba(128, 128, 128, 0.05)',
+                    borderWidth: 1,
+                    fill: false,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#B0B0B0',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: '#333333',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#808080',
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: '#333333',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#808080',
+                            font: {
+                                size: 11
+                            },
+                            callback: function(value) {
+                                return 'NT$ ' + (value / 10000).toFixed(0) + '萬';
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+
+        // 資產配置圓餅圖
+        const allocationCtx = document.getElementById('allocationChart').getContext('2d');
+        const allocationChart = new Chart(allocationCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['科技股', '金融股', 'ETF', '其他'],
+                datasets: [{
+                    data: [45, 25, 20, 10],
+                    backgroundColor: [
+                        '#1E88E5',
+                        '#00C853',
+                        '#FF9500',
+                        '#7B68EE'
+                    ],
+                    borderWidth: 0,
+                    hoverBorderWidth: 2,
+                    hoverBorderColor: '#FFFFFF'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                cutout: '60%',
+                animation: {
+                    animateRotate: true,
+                    duration: 1000
+                }
+            }
+        });
+
+        // 實時更新功能
+        function updateMarketData() {
+            // 模擬市場數據更新
+            const elements = document.querySelectorAll('.stock-price, .stock-change');
+            elements.forEach(el => {
+                if (el.textContent === '--') {
+                    // 模擬價格更新
+                    const change = (Math.random() - 0.5) * 10;
+                    if (el.classList.contains('stock-price')) {
+                        el.textContent = (Math.random() * 1000 + 100).toFixed(2);
+                    } else if (el.classList.contains('stock-change')) {
+                        el.textContent = (change >= 0 ? '+' : '') + change.toFixed(2);
+                        el.className = 'stock-change ' + (change >= 0 ? 'positive' : 'negative');
+                    }
+                }
+            });
+        }
+
+        // 每30秒更新一次數據
+        setInterval(updateMarketData, 30000);
+
+        // 標籤切換功能
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有active類
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                // 添加active類到當前標籤
+                this.classList.add('active');
+            });
+        });
+
+        // 時間範圍按鈕功能
+        document.querySelectorAll('.card-header .btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 移除所有active類
+                this.parentElement.querySelectorAll('.btn').forEach(b => {
+                    b.classList.remove('btn-primary');
+                    b.classList.add('btn-secondary');
+                });
+                // 添加active類到當前按鈕
+                this.classList.remove('btn-secondary');
+                this.classList.add('btn-primary');
+                
+                // 這裡可以添加圖表數據更新邏輯
+                console.log('時間範圍切換:', this.textContent);
+            });
+        });
+    </script>
 </body>
-</html> 
+</html>

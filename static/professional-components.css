@@ -1,0 +1,318 @@
+/* 專業金融組件樣式 - Bloomberg/Yahoo Finance 風格 */
+
+/* 股價顯示組件 */
+.stock-ticker {
+    background: var(--bg-panel);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-numbers);
+    transition: var(--transition-fast);
+}
+
+.stock-ticker:hover {
+    border-color: var(--finance-blue);
+    background: var(--bg-hover);
+}
+
+.stock-symbol {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+.stock-price {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.stock-change {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.stock-change.positive {
+    background: rgba(0, 200, 83, 0.15);
+    color: var(--market-green);
+}
+
+.stock-change.negative {
+    background: rgba(244, 67, 54, 0.15);
+    color: var(--market-red);
+}
+
+.stock-change.neutral {
+    background: rgba(128, 128, 128, 0.15);
+    color: var(--neutral-gray);
+}
+
+/* 市場數據表格 */
+.market-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-panel);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    font-size: 13px;
+}
+
+.market-data-table th {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: var(--space-md);
+    text-align: left;
+    border-bottom: var(--border-width) solid var(--border-color);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.market-data-table td {
+    padding: var(--space-md);
+    border-bottom: var(--border-width) solid var(--border-color);
+    color: var(--text-primary);
+    font-family: var(--font-numbers);
+}
+
+.market-data-table tr:hover {
+    background: var(--bg-hover);
+}
+
+.market-data-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* 數據視覺化 */
+.data-metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    background: var(--bg-panel);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius);
+    transition: var(--transition-fast);
+}
+
+.data-metric:hover {
+    border-color: var(--finance-blue);
+}
+
+.data-metric-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.data-metric-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-numbers);
+}
+
+.data-metric-change {
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+/* 搜索框 - Bloomberg風格 */
+.search-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+.search-input {
+    width: 100%;
+    padding: var(--space-md) var(--space-xl) var(--space-md) var(--space-lg);
+    background: var(--bg-panel);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: var(--transition-normal);
+}
+
+.search-input:focus {
+    border-color: var(--finance-blue);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+.search-clear {
+    position: absolute;
+    right: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: var(--space-xs);
+    border-radius: var(--border-radius);
+    transition: var(--transition-fast);
+}
+
+.search-clear:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+/* 導航標籤 */
+.nav-tabs {
+    border-bottom: var(--border-width) solid var(--border-color);
+    display: flex;
+    gap: 0;
+    background: var(--bg-secondary);
+}
+
+.nav-tab {
+    padding: var(--space-md) var(--space-lg);
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    border-bottom: 2px solid transparent;
+}
+
+.nav-tab:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.nav-tab.active {
+    color: var(--finance-blue);
+    border-bottom-color: var(--finance-blue);
+    background: var(--bg-primary);
+}
+
+/* 狀態指示器 */
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--neutral-gray);
+}
+
+.status-indicator.online .status-dot {
+    background: var(--market-green);
+}
+
+.status-indicator.offline .status-dot {
+    background: var(--market-red);
+}
+
+.status-indicator.warning .status-dot {
+    background: var(--market-orange);
+}
+
+/* 工具提示 */
+.tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 11px;
+    white-space: nowrap;
+    border-radius: var(--border-radius);
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-fast);
+    border: var(--border-width) solid var(--border-color);
+    z-index: 1000;
+}
+
+.tooltip:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+/* 載入動畫 */
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-top: 2px solid var(--finance-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .data-metric-value {
+        font-size: 16px;
+    }
+    
+    .market-data-table th,
+    .market-data-table td {
+        padding: var(--space-sm);
+    }
+    
+    .nav-tab {
+        padding: var(--space-sm) var(--space-md);
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .data-metric-value {
+        font-size: 14px;
+    }
+    
+    .stock-ticker {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-xs);
+    }
+}

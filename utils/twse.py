@@ -305,10 +305,11 @@ def get_stock_from_twse_realtime(stock_code):
 
 
 def get_market_from_twse():
-    """從證交所獲取大盤即時資訊"""
+    """從證交所獲取大盤即時資訊（台股加權指數 TAIEX）"""
     try:
-        # 證交所大盤即時資訊 - 使用寶島股價指數
-        url = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_FRMSA.tw|otc_FRMSA.tw"
+        # 使用台股加權指數 (TAIEX) 代碼 t00
+        # 參考：tse_t00.tw 為 TSE 加權指數
+        url = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_t00.tw"
         
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -321,12 +322,12 @@ def get_market_from_twse():
         data = resp.json()
         
         if data.get('msgArray') and len(data['msgArray']) > 0:
-            # 第一個是寶島股價指數
+            # 回傳為加權指數資料
             market_data = data['msgArray'][0]
             
             current_index = market_data.get('z', '0')   # 目前指數
             prev_close = market_data.get('y', '0')      # 昨收指數
-            name = market_data.get('n', '')             # 指數名稱
+            name = market_data.get('n', '') or '台灣加權股價指數'  # 指數名稱
             
             try:
                 if current_index and current_index not in ['0', '-'] and prev_close and prev_close not in ['0', '-']:
@@ -431,6 +432,21 @@ def get_stock_basic_info(stock_code):
 def get_stock_name_from_api(stock_code):
     """從 API 動態獲取股票名稱"""
     try:
+        # 檢查是否為中文名稱，如果是則直接返回預設名稱
+        if re.search(r'[\u4e00-\u9fff]', stock_code):
+            # 中文名稱對應表
+            chinese_names = {
+                '台積電': '台積電',
+                '鴻海': '鴻海',
+                '聯發科': '聯發科',
+                '元大台灣50': '元大台灣50',
+                '元大高股息': '元大高股息',
+                '富邦台50': '富邦台50',
+                '國泰永續高股息': '國泰永續高股息',
+                '群益台灣精選高息': '群益台灣精選高息',
+            }
+            return chinese_names.get(stock_code, stock_code)
+        
         # 嘗試從證交所即時報價 API 獲取名稱
         url = f"https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_{stock_code}.tw"
         headers = {
