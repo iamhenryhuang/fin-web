@@ -353,6 +353,12 @@ def ai_price_prediction_tool():
     """AI 股價預測（趨勢外推版）"""
     return render_template('tools/ai.html')
 
+
+@app.route('/tools/screener')
+def stock_screener_tool():
+    """股票選股工具"""
+    return render_template('tools/screener.html')
+
 # === 會員系統路由 ===
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -741,6 +747,114 @@ def api_add_to_watchlist():
             'success': False,
             'message': '操作失敗，請稍後再試'
         })
+
+
+@app.route('/api/screener', methods=['POST'])
+def api_stock_screener():
+    """API: 股票選股 - Windows 兼容版"""
+    try:
+        from utils.stock_screener import StockScreener
+        import threading
+        import time
+        
+        data = request.get_json() or {}
+        criteria = data.get('criteria', {})
+        
+        print(f"🔍 收到選股請求，條件: {criteria}")
+        
+        # 創建選股器實例
+        screener = StockScreener()
+        
+        # 使用線程實現超時控制（Windows 兼容）
+        results = []
+        exception_occurred = None
+        
+        def run_screening():
+            try:
+                nonlocal results
+                results = screener.screen_stocks(criteria)
+            except Exception as e:
+                nonlocal exception_occurred
+                exception_occurred = e
+        
+        # 啟動篩選線程
+        screening_thread = threading.Thread(target=run_screening)
+        screening_thread.daemon = True
+        screening_thread.start()
+        
+        # 等待結果或超時（60秒）
+        screening_thread.join(timeout=60)
+        
+        if screening_thread.is_alive():
+            print("⏰ 選股處理超時")
+            return jsonify({
+                'success': False,
+                'error': '處理時間過長，請稍後再試或調整篩選條件',
+                'timestamp': datetime.now().isoformat()
+            }), 408
+        
+        if exception_occurred:
+            raise exception_occurred
+        
+        # 確保結果是有效的
+        if not isinstance(results, list):
+            results = []
+        
+        # 限制回傳結果數量（避免回應過大）
+        max_results = 30
+        if len(results) > max_results:
+            results = results[:max_results]
+        
+        print(f"✅ 選股完成，回傳 {len(results)} 支股票")
+        
+        return jsonify({
+            'success': True,
+            'results': results,
+            'total_count': len(results),
+            'criteria': criteria,
+            'message': f'成功篩選出 {len(results)} 支股票',
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except ImportError as e:
+        print(f"選股模組載入錯誤: {e}")
+        return jsonify({
+            'success': False,
+            'error': '選股模組載入失敗，請確認系統設定',
+            'timestamp': datetime.now().isoformat()
+        }), 500
+        
+    except Exception as e:
+        print(f"選股API錯誤: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'選股處理失敗: {str(e)}',
+            'timestamp': datetime.now().isoformat()
+        }), 500
+
+
+@app.route('/api/screener/strategies')
+def api_screener_strategies():
+    """API: 獲取預設選股策略"""
+    try:
+        from utils.stock_screener import StockScreener
+        
+        screener = StockScreener()
+        strategies = screener.get_preset_strategies()
+        
+        return jsonify({
+            'success': True,
+            'strategies': strategies,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        print(f"獲取策略錯誤: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }), 500
 
 
 

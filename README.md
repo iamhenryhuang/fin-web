@@ -16,6 +16,7 @@
 ### 🛠️ 投資工具
 - 股息計算器（支援年/半年/季/月配與再投入）`/tools/dividend`
 - 技術分析（MA、RSI、MACD）`/tools/ta`
+- 智能選股（基於技術指標的股票篩選系統）`/tools/screener`
 - 資產配置（風險等級、自選資產、年期/每月投入、投組指標與期末估算）`/tools/allocation`
 - 定期定額試算（投入/頻率/年化報酬）`/tools/dca`
 - 股價預測（簡易趨勢外推，無 ML 依賴）`/tools/ai`
