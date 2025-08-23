@@ -1,785 +1,473 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>智能選股 | Taiwan Stock Pro</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='enhanced-ui.css') }}" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='mobile-responsive.css') }}" rel="stylesheet" />
-  
-  <style>
-    /* 選股結果UI優化 */
-    .stock-row {
-      transition: all 0.3s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能選股 | Taiwan Stock Terminal</title>
     
-    .stock-row:hover {
-      background-color: var(--bs-light) !important;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+    <!-- Bloomberg專業字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    .high-score-row {
-      border-left: 4px solid #198754;
-    }
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     
-    .buy-signal-row {
-      border-left: 4px solid #0d6efd;
-    }
+    <!-- 主要樣式 -->
+    <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet">
     
-    .oversold-row {
-      border-left: 4px solid #ffc107;
-    }
-    
-    .btn-group .btn {
-      margin: 0 1px;
-    }
-    
-    .table-dark th {
-      background-color: #495057 !important;
-      border-color: #495057 !important;
-      color: white !important;
-    }
-    
-    .badge.fs-6 {
-      font-size: 0.875rem !important;
-    }
-    
-    /* 統計卡片動畫 */
-    .card:hover {
-      transform: translateY(-2px);
-      transition: transform 0.3s ease;
-    }
-    
-    /* 快速篩選按鈕 */
-    .btn.active {
-      transform: scale(1.05);
-    }
-    
-    /* 響應式調整 */
-    @media (max-width: 768px) {
-      .table-responsive {
-        font-size: 0.85rem;
-      }
-      
-      .btn-group {
-        flex-direction: column;
-      }
-      
-      .btn-group .btn {
-        margin: 1px 0;
-        border-radius: 0.25rem !important;
-      }
-    }
-  </style>
+    <style>
+        /* 統一的工具頁面樣式 */
+        .tool-hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #0f1419 100%);
+            border-bottom: 3px solid #ff9800;
+            padding: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tool-hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 152, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(0, 123, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .tool-header {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .tool-icon {
+            display: inline-block;
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 152, 0, 0.2);
+            border: 2px solid #ff9800;
+            border-radius: 12px;
+            color: #ff9800;
+            font-size: 28px;
+            line-height: 60px;
+            margin-bottom: 1rem;
+        }
+        
+        .tool-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tool-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .screener-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .filters-section {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .filters-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #ff9800;
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #ff9800;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+        }
+        
+        .btn-screen {
+            padding: 0.75rem 2rem;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-screen:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        }
+        
+        .results-section {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .results-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #ff9800;
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .results-table th {
+            background: rgba(255, 152, 0, 0.1);
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .stock-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: #ff9800;
+        }
+        
+        .stock-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .stock-price {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+        
+        .positive {
+            color: #00d4aa;
+        }
+        
+        .negative {
+            color: #ff6b6b;
+        }
+        
+        .neutral {
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-table {
+                font-size: 14px;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <nav class="enhanced-navbar">
-    <div class="container-fluid">
-      <div class="enhanced-navbar-content">
-        <div class="enhanced-navbar-brand">
-          <a href="{{ url_for('home') }}" class="brand-link">
-            <div class="brand-icon"><i class="bi bi-graph-up-arrow"></i></div>
-            <div class="brand-text">
-              <span class="brand-name">Taiwan Stock</span>
-              <span class="brand-subtitle">Pro</span>
-            </div>
-          </a>
-        </div>
-        <div class="enhanced-navbar-user">
-          <a href="{{ url_for('home') }}" class="btn-enhanced btn-enhanced-ghost btn-enhanced-sm">
-            <i class="bi bi-house"></i>
-            <span class="d-none d-md-inline">首頁</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container my-4">
-    <div class="row">
-      <!-- 篩選條件面板 -->
-      <div class="col-lg-4 mb-4">
-        <div class="card-enhanced animate-slide-in-left">
-          <div class="card-enhanced-header">
-            <h5 class="mb-0 text-enhanced-primary">
-              <i class="bi bi-funnel text-primary me-2"></i>選股條件
-            </h5>
-          </div>
-          <div class="card-enhanced-body">
-            <!-- 預設策略 -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">選股策略</label>
-              <select id="strategy-select" class="form-control-enhanced">
-                <option value="custom">自訂條件</option>
-                <option value="all_stocks">全部股票</option>
-                <option value="value_hunting">價值獵人</option>
-                <option value="momentum">動能追蹤</option>
-                <option value="oversold_bounce">超跌反彈</option>
-                <option value="stable_growth">穩健成長</option>
-              </select>
-              <small class="text-muted mt-1 d-block" id="strategy-description">選擇預設策略或自訂篩選條件</small>
-            </div>
-
-            <!-- RSI 條件 -->
-            <div class="mb-3">
-              <label class="form-label">RSI 範圍</label>
-              <div class="row g-2">
-                <div class="col-6">
-                  <input type="number" id="min-rsi" class="form-control-enhanced" placeholder="最小值" min="0" max="100" value="0">
-                  <small class="text-muted">最小 RSI</small>
-                </div>
-                <div class="col-6">
-                  <input type="number" id="max-rsi" class="form-control-enhanced" placeholder="最大值" min="0" max="100" value="100">
-                  <small class="text-muted">最大 RSI</small>
-                </div>
-              </div>
-            </div>
-
-            <!-- 評分條件 -->
-            <div class="mb-3">
-              <label class="form-label">最低評分</label>
-              <input type="range" id="min-score" class="form-range" min="0" max="100" value="40">
-              <div class="d-flex justify-content-between">
-                <small class="text-muted">0</small>
-                <span id="score-value" class="fw-bold text-primary">40</span>
-                <small class="text-muted">100</small>
-              </div>
-            </div>
-
-            <!-- 價格趨勢 -->
-            <div class="mb-3">
-              <label class="form-label">價格趨勢</label>
-              <select id="price-trend" class="form-control-enhanced">
-                <option value="any">不限</option>
-                <option value="up">上漲</option>
-                <option value="down">下跌</option>
-              </select>
-            </div>
-
-            <!-- 成交量篩選 -->
-            <div class="mb-4">
-              <div class="form-check">
-                <input type="checkbox" id="volume-filter" class="form-check-input">
-                <label class="form-check-label" for="volume-filter">
-                  啟用成交量篩選
-                </label>
-              </div>
-            </div>
-
-            <!-- 開始篩選按鈕 -->
-            <button class="btn-enhanced btn-enhanced-primary w-100" onclick="startScreening()">
-              <i class="bi bi-search"></i>
-              <span>開始選股</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 說明卡片 -->
-        <div class="card-enhanced mt-4 animate-slide-in-left" style="animation-delay: 0.1s;">
-          <div class="card-enhanced-header">
-            <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>選股說明</h6>
-          </div>
-          <div class="card-enhanced-body">
-            <ul class="list-unstyled mb-0 small">
-              <li class="mb-2"><i class="bi bi-dot text-primary"></i><strong>RSI：</strong>相對強弱指標，30以下超賣，70以上超買</li>
-              <li class="mb-2"><i class="bi bi-dot text-primary"></i><strong>MACD：</strong>指數平滑移動平均線，判斷買賣時機</li>
-              <li class="mb-2"><i class="bi bi-dot text-primary"></i><strong>移動平均：</strong>MA5、MA10、MA20判斷趨勢</li>
-              <li class="mb-0"><i class="bi bi-dot text-primary"></i><strong>評分：</strong>綜合技術指標的評分系統</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- 結果顯示區域 -->
-      <div class="col-lg-8">
-        <div class="card-enhanced animate-slide-in-right">
-          <div class="card-enhanced-header d-flex align-items-center justify-content-between">
-            <h5 class="mb-0 text-enhanced-primary">
-              <i class="bi bi-trophy text-warning me-2"></i>選股結果
-            </h5>
-            <div id="result-count" class="badge bg-primary">0 支股票</div>
-          </div>
-          <div class="card-enhanced-body">
-            <!-- 載入狀態 -->
-            <div id="loading" class="loading-enhanced-container" style="display:none;">
-              <div class="loading-enhanced-spinner"></div>
-              <p class="loading-enhanced-text">正在分析股票...</p>
-              <small class="text-muted">這可能需要一些時間，請稍候</small>
-            </div>
-
-            <!-- 初始狀態 -->
-            <div id="initial-state" class="text-center py-5">
-              <i class="bi bi-target display-1 text-muted mb-3"></i>
-              <h5 class="text-muted mb-3">開始您的選股之旅</h5>
-              <p class="text-muted">設定篩選條件，點擊「開始選股」來發現投資機會</p>
-            </div>
-
-            <!-- 結果統計 -->
-            <div id="results-stats" style="display:none;" class="mb-4">
-              <div class="row g-3">
-                <div class="col-md-3">
-                  <div class="card border-0 bg-primary bg-opacity-10">
-                    <div class="card-body text-center py-3">
-                      <i class="bi bi-trophy text-primary fs-4"></i>
-                      <div class="mt-2">
-                        <div class="fw-bold text-primary" id="total-stocks">0</div>
-                        <small class="text-muted">篩選股票</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="card border-0 bg-success bg-opacity-10">
-                    <div class="card-body text-center py-3">
-                      <i class="bi bi-arrow-up-circle text-success fs-4"></i>
-                      <div class="mt-2">
-                        <div class="fw-bold text-success" id="high-score-count">0</div>
-                        <small class="text-muted">高評分 (≥80)</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="card border-0 bg-warning bg-opacity-10">
-                    <div class="card-body text-center py-3">
-                      <i class="bi bi-star text-warning fs-4"></i>
-                      <div class="mt-2">
-                        <div class="fw-bold text-warning" id="avg-score">0</div>
-                        <small class="text-muted">平均評分</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="card border-0 bg-info bg-opacity-10">
-                    <div class="card-body text-center py-3">
-                      <i class="bi bi-clock text-info fs-4"></i>
-                      <div class="mt-2">
-                        <div class="fw-bold text-info" id="last-update">--</div>
-                        <small class="text-muted">更新時間</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 快速篩選按鈕 -->
-            <div id="quick-filters" style="display:none;" class="mb-3">
-              <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-sm btn-outline-primary active" data-filter="all">
-                  <i class="bi bi-list"></i> 全部
-                </button>
-                <button class="btn btn-sm btn-outline-success" data-filter="high-score">
-                  <i class="bi bi-star"></i> 高評分
-                </button>
-                <button class="btn btn-sm btn-outline-info" data-filter="buy-signal">
-                  <i class="bi bi-arrow-up"></i> 買進信號
-                </button>
-                <button class="btn btn-sm btn-outline-warning" data-filter="oversold">
-                  <i class="bi bi-arrow-down"></i> 超賣股票
-                </button>
-              </div>
-            </div>
-
-            <!-- 結果表格 -->
-            <div id="results-table" style="display:none;">
-              <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                  <thead class="table-dark">
-                    <tr>
-                      <th class="text-center" style="width: 60px;">
-                        <i class="bi bi-award"></i>
-                      </th>
-                      <th style="width: 140px;">股票資訊</th>
-                      <th class="text-end" style="width: 100px;">
-                        <i class="bi bi-currency-dollar"></i> 現價
-                      </th>
-                      <th class="text-center" style="width: 100px;">
-                        <i class="bi bi-graph-up-arrow"></i> 漲跌
-                      </th>
-                      <th class="text-center" style="width: 80px;">
-                        <i class="bi bi-speedometer2"></i> RSI
-                      </th>
-                      <th class="text-center" style="width: 80px;">
-                        <i class="bi bi-star-fill"></i> 評分
-                      </th>
-                      <th style="width: 120px;">
-                        <i class="bi bi-flag"></i> 投資信號
-                      </th>
-                      <th class="text-center" style="width: 100px;">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody id="results-tbody">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- 無結果狀態 -->
-            <div id="no-results" style="display:none;" class="text-center py-5">
-              <i class="bi bi-search display-1 text-muted mb-3"></i>
-              <h5 class="text-muted mb-3">沒有找到符合條件的股票</h5>
-              <p class="text-muted">嘗試調整篩選條件，或選擇其他選股策略</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 股票詳情Modal -->
-  <div class="modal fade" id="stockDetailModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">
-            <i class="bi bi-graph-up me-2"></i>
-            <span id="modal-stock-name">股票詳情</span>
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div id="stock-detail-content">
-            <!-- 股票詳情內容將在這裡動態載入 -->
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
-          <a id="view-stock-link" href="#" class="btn btn-primary">查看完整資訊</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // 策略描述
-    const strategyDescriptions = {
-      'custom': '選擇預設策略或自訂篩選條件',
-      'all_stocks': '顯示所有可分析的股票，無篩選條件',
-      'value_hunting': '尋找被低估的優質股票，適合價值投資者',
-      'momentum': '捕捉上漲動能股票，適合趨勢跟隨者',
-      'oversold_bounce': '尋找超跌後的反彈機會，適合短線操作',
-      'stable_growth': '尋找穩定成長的股票，適合穩健投資'
-    };
-
-    // 預設策略參數 - 優化版
-    const strategyParams = {
-      'all_stocks': { min_rsi: 0, max_rsi: 100, min_score: 0, price_trend: 'any', volume_filter: false },
-      'value_hunting': { min_rsi: 10, max_rsi: 60, min_score: 50, price_trend: 'any', volume_filter: false },
-      'momentum': { min_rsi: 30, max_rsi: 80, min_score: 55, price_trend: 'any', volume_filter: false },
-      'oversold_bounce': { min_rsi: 0, max_rsi: 40, min_score: 40, price_trend: 'any', volume_filter: false },
-      'stable_growth': { min_rsi: 20, max_rsi: 80, min_score: 55, price_trend: 'any', volume_filter: false }
-    };
-
-    // 頁面載入完成後執行
-    document.addEventListener('DOMContentLoaded', function() {
-      // 初始化事件監聽器
-      setupEventListeners();
-    });
-
-    function setupEventListeners() {
-      // 策略選擇
-      document.getElementById('strategy-select').addEventListener('change', function() {
-        const strategy = this.value;
-        updateStrategyDescription(strategy);
-        if (strategy !== 'custom') {
-          applyStrategyParams(strategy);
-        }
-      });
-
-      // 評分滑桿
-      document.getElementById('min-score').addEventListener('input', function() {
-        document.getElementById('score-value').textContent = this.value;
-      });
-    }
-
-    function updateStrategyDescription(strategy) {
-      const description = strategyDescriptions[strategy] || '自訂篩選條件';
-      document.getElementById('strategy-description').textContent = description;
-    }
-
-    function applyStrategyParams(strategy) {
-      const params = strategyParams[strategy];
-      if (!params) return;
-
-      document.getElementById('min-rsi').value = params.min_rsi;
-      document.getElementById('max-rsi').value = params.max_rsi;
-      document.getElementById('min-score').value = params.min_score;
-      document.getElementById('score-value').textContent = params.min_score;
-      document.getElementById('price-trend').value = params.price_trend;
-      document.getElementById('volume-filter').checked = params.volume_filter;
-    }
-
-    async function startScreening() {
-      // 顯示載入狀態
-      showLoading();
-
-      // 收集篩選條件
-      const criteria = {
-        min_rsi: parseInt(document.getElementById('min-rsi').value),
-        max_rsi: parseInt(document.getElementById('max-rsi').value),
-        min_score: parseInt(document.getElementById('min-score').value),
-        price_trend: document.getElementById('price-trend').value,
-        volume_filter: document.getElementById('volume-filter').checked
-      };
-
-      try {
-        const response = await fetch('/api/screener', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ criteria: criteria })
-        });
-
-        const data = await response.json();
-        hideLoading();
-
-        if (data.success) {
-          displayResults(data.results);
-        } else {
-          alert('選股失敗: ' + (data.error || '未知錯誤'));
-          showNoResults();
-        }
-      } catch (error) {
-        hideLoading();
-        alert('網路錯誤，請稍後再試');
-        console.error('選股錯誤:', error);
-      }
-    }
-
-    function showLoading() {
-      document.getElementById('loading').style.display = 'block';
-      document.getElementById('initial-state').style.display = 'none';
-      document.getElementById('results-table').style.display = 'none';
-      document.getElementById('no-results').style.display = 'none';
-    }
-
-    function hideLoading() {
-      document.getElementById('loading').style.display = 'none';
-    }
-
-    function displayResults(results) {
-      if (!results || results.length === 0) {
-        showNoResults();
-        return;
-      }
-
-      // 更新計數
-      document.getElementById('result-count').textContent = `${results.length} 支股票`;
-
-      // 計算統計數據
-      const highScoreCount = results.filter(stock => stock.score >= 80).length;
-      const avgScore = Math.round(results.reduce((sum, stock) => sum + stock.score, 0) / results.length);
-      const currentTime = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
-
-      // 更新統計卡片
-      document.getElementById('total-stocks').textContent = results.length;
-      document.getElementById('high-score-count').textContent = highScoreCount;
-      document.getElementById('avg-score').textContent = avgScore;
-      document.getElementById('last-update').textContent = currentTime;
-
-      // 填充表格
-      const tbody = document.getElementById('results-tbody');
-      tbody.innerHTML = '';
-
-      results.forEach((stock, index) => {
-        const row = createEnhancedResultRow(stock, index + 1);
-        tbody.appendChild(row);
-      });
-
-      // 顯示所有相關元素
-      document.getElementById('results-stats').style.display = 'block';
-      document.getElementById('quick-filters').style.display = 'block';
-      document.getElementById('results-table').style.display = 'block';
-      document.getElementById('initial-state').style.display = 'none';
-      document.getElementById('no-results').style.display = 'none';
-
-      // 設置快速篩選功能
-      setupQuickFilters(results);
-    }
-
-    function showNoResults() {
-      document.getElementById('no-results').style.display = 'block';
-      document.getElementById('initial-state').style.display = 'none';
-      document.getElementById('results-table').style.display = 'none';
-      document.getElementById('results-stats').style.display = 'none';
-      document.getElementById('quick-filters').style.display = 'none';
-      document.getElementById('result-count').textContent = '0 支股票';
-    }
-
-    function createEnhancedResultRow(stock, rank) {
-      const tr = document.createElement('tr');
-      tr.className = 'stock-row';
-      tr.dataset.score = stock.score;
-      tr.dataset.rsi = stock.rsi;
-      
-      // 根據評分添加CSS類別
-      if (stock.score >= 80) tr.classList.add('high-score-row');
-      if (stock.rsi < 30) tr.classList.add('oversold-row');
-      
-      // 檢查是否有買進信號
-      const signals = stock.signals || [];
-      const hasBuySignal = signals.some(signal => 
-        signal[2] === 'green' || signal[1].includes('買進') || signal[1].includes('機會')
-      );
-      if (hasBuySignal) tr.classList.add('buy-signal-row');
-
-      // 排名徽章
-      const rankTd = document.createElement('td');
-      rankTd.className = 'text-center';
-      let rankBadgeClass = 'bg-secondary';
-      if (rank <= 3) rankBadgeClass = 'bg-warning';
-      else if (rank <= 10) rankBadgeClass = 'bg-info';
-      rankTd.innerHTML = `<span class="badge ${rankBadgeClass} fs-6">${rank}</span>`;
-
-      // 股票資訊 - 更豐富的顯示
-      const stockTd = document.createElement('td');
-      stockTd.innerHTML = `
-        <div class="d-flex align-items-center">
-          <div class="flex-grow-1">
-            <div class="fw-bold text-primary">${stock.stock_code}</div>
-            <small class="text-muted">${stock.stock_name}</small>
-          </div>
-        </div>
-      `;
-
-      // 現價 - 更突出的顯示
-      const priceTd = document.createElement('td');
-      priceTd.className = 'text-end';
-      priceTd.innerHTML = `<span class="fw-bold fs-6">$${stock.current_price}</span>`;
-
-      // 漲跌幅 - 改進的顯示
-      const changeTd = document.createElement('td');
-      changeTd.className = 'text-center';
-      const change5d = stock.price_change_5d || 0;
-      const changeClass = change5d >= 0 ? 'text-success' : 'text-danger';
-      const changeIcon = change5d >= 0 ? 'bi-arrow-up' : 'bi-arrow-down';
-      changeTd.innerHTML = `
-        <div class="${changeClass}">
-          <i class="bi ${changeIcon} me-1"></i>
-          <span class="fw-bold">${change5d >= 0 ? '+' : ''}${change5d}%</span>
-        </div>
-      `;
-
-      // RSI - 帶進度條顯示
-      const rsiTd = document.createElement('td');
-      rsiTd.className = 'text-center';
-      const rsi = stock.rsi || 0;
-      let rsiClass = 'text-muted';
-      let rsiStatus = '';
-      if (rsi < 30) {
-        rsiClass = 'text-success';
-        rsiStatus = '超賣';
-      } else if (rsi > 70) {
-        rsiClass = 'text-danger';
-        rsiStatus = '超買';
-      } else {
-        rsiStatus = '中性';
-      }
-      
-      rsiTd.innerHTML = `
-        <div class="${rsiClass}">
-          <div class="fw-bold">${rsi}</div>
-          <small>${rsiStatus}</small>
-        </div>
-      `;
-
-      // 評分 - 帶星級顯示
-      const scoreTd = document.createElement('td');
-      scoreTd.className = 'text-center';
-      const score = stock.score || 0;
-      let scoreClass = 'bg-secondary';
-      let stars = '★☆☆☆☆';
-      
-      if (score >= 90) {
-        scoreClass = 'bg-success';
-        stars = '★★★★★';
-      } else if (score >= 80) {
-        scoreClass = 'bg-success';
-        stars = '★★★★☆';
-      } else if (score >= 70) {
-        scoreClass = 'bg-warning';
-        stars = '★★★☆☆';
-      } else if (score >= 60) {
-        scoreClass = 'bg-info';
-        stars = '★★☆☆☆';
-      } else if (score >= 40) {
-        scoreClass = 'bg-info';
-        stars = '★☆☆☆☆';
-      }
-      
-      scoreTd.innerHTML = `
-        <div>
-          <span class="badge ${scoreClass} mb-1">${score}</span>
-          <div><small class="text-warning">${stars}</small></div>
-        </div>
-      `;
-
-      // 投資信號 - 更豐富的顯示
-      const signalTd = document.createElement('td');
-      if (signals.length > 0) {
-        const signal = signals[0];
-        const signalClass = signal[2] === 'green' ? 'text-success' : 
-                           signal[2] === 'red' ? 'text-danger' : 
-                           signal[2] === 'blue' ? 'text-info' :
-                           signal[2] === 'orange' ? 'text-warning' : 'text-muted';
-        const signalIcon = signal[2] === 'green' ? 'bi-arrow-up-circle' : 
-                          signal[2] === 'red' ? 'bi-arrow-down-circle' : 
-                          'bi-dash-circle';
-        
-        signalTd.innerHTML = `
-          <div class="${signalClass}">
-            <i class="bi ${signalIcon} me-1"></i>
-            <small class="fw-bold">${signal[1]}</small>
-          </div>
-        `;
-      } else {
-        signalTd.innerHTML = '<small class="text-muted">無明確信號</small>';
-      }
-
-      // 操作按鈕 - 更豐富的功能
-      const actionTd = document.createElement('td');
-      actionTd.className = 'text-center';
-      actionTd.innerHTML = `
-        <div class="btn-group btn-group-sm" role="group">
-          <button class="btn btn-outline-primary" onclick="showStockDetail('${stock.stock_code}')" 
-                  title="查看詳情">
-            <i class="bi bi-eye"></i>
-          </button>
-          <a href="/stock?code=${stock.stock_code}" class="btn btn-outline-success" 
-             target="_blank" title="完整分析">
-            <i class="bi bi-graph-up"></i>
-          </a>
-          <button class="btn btn-outline-warning" onclick="addToWatchlist('${stock.stock_code}')" 
-                  title="加入自選股">
-            <i class="bi bi-star"></i>
-          </button>
-        </div>
-      `;
-
-      tr.appendChild(rankTd);
-      tr.appendChild(stockTd);
-      tr.appendChild(priceTd);
-      tr.appendChild(changeTd);
-      tr.appendChild(rsiTd);
-      tr.appendChild(scoreTd);
-      tr.appendChild(signalTd);
-      tr.appendChild(actionTd);
-
-      return tr;
-    }
-
-    function setupQuickFilters(results) {
-      const filterButtons = document.querySelectorAll('[data-filter]');
-      
-      filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          // 移除所有按鈕的 active 類別
-          filterButtons.forEach(btn => btn.classList.remove('active'));
-          // 添加當前按鈕的 active 類別
-          this.classList.add('active');
-          
-          const filter = this.dataset.filter;
-          filterResults(filter, results);
-        });
-      });
-    }
     
-    function filterResults(filter, allResults) {
-      const rows = document.querySelectorAll('.stock-row');
-      
-      rows.forEach(row => {
-        let show = true;
-        
-        switch(filter) {
-          case 'all':
-            show = true;
-            break;
-          case 'high-score':
-            show = row.classList.contains('high-score-row');
-            break;
-          case 'buy-signal':
-            show = row.classList.contains('buy-signal-row');
-            break;
-          case 'oversold':
-            show = row.classList.contains('oversold-row');
-            break;
-        }
-        
-        row.style.display = show ? '' : 'none';
-      });
-      
-      // 更新顯示的股票數量
-      const visibleRows = document.querySelectorAll('.stock-row:not([style*="none"])');
-      const filterName = document.querySelector(`[data-filter="${filter}"]`).textContent.trim();
-      document.getElementById('result-count').textContent = 
-        `${visibleRows.length} 支股票 (${filterName})`;
-    }
-
-    function addToWatchlist(stockCode) {
-      // 這裡實現加入自選股功能
-      fetch('/api/watchlist/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ stock_code: stockCode })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // 顯示成功訊息
-          const button = event.target.closest('button');
-          const originalContent = button.innerHTML;
-          button.innerHTML = '<i class="bi bi-check"></i>';
-          button.classList.remove('btn-outline-warning');
-          button.classList.add('btn-success');
-          
-          setTimeout(() => {
-            button.innerHTML = originalContent;
-            button.classList.remove('btn-success');
-            button.classList.add('btn-outline-warning');
-          }, 2000);
-          
-          // 可以顯示toast通知
-          showToast('成功加入自選股！', 'success');
-        } else {
-          showToast(data.message || '加入自選股失敗', 'error');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showToast('網路錯誤，請稍後再試', 'error');
-      });
-    }
+    <!-- Bloomberg風格導航列 -->
+    <nav class="bloomberg-navbar">
+        <div class="bloomberg-navbar-content">
+            <a href="{{ url_for('home') }}" class="bloomberg-brand">
+                <div class="bloomberg-brand-logo">TS</div>
+                Taiwan Stock Terminal
+            </a>
+            
+            <div class="bloomberg-nav-items d-none d-md-flex">
+                <a href="{{ url_for('home') }}" class="bloomberg-nav-link">Markets</a>
+                <a href="#" class="bloomberg-nav-link">Stocks</a>
+                <a href="#" class="bloomberg-nav-link">News</a>
+                <a href="#" class="bloomberg-nav-link active">Tools</a>
+            </div>
+            
+            <div class="bloomberg-nav-items">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="bloomberg-nav-link">
+                        <i class="bi bi-person-circle"></i> {{ current_user.username }}
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="bloomberg-nav-link">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="bloomberg-nav-link">Login</a>
+                    <a href="{{ url_for('register') }}" class="bloomberg-btn bloomberg-btn-orange">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
     
-    function showToast(message, type = 'info') {
-      // 簡單的 toast 通知
-      const toast = document.createElement('div');
-      toast.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} 
-                        position-fixed top-0 end-0 m-3`;
-      toast.style.zIndex = '9999';
-      toast.textContent = message;
-      
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.remove();
-      }, 3000);
-    }
-
-    function showStockDetail(stockCode) {
-      // 導向股票詳情頁面
-      window.open(`/stock?code=${stockCode}`, '_blank');
-    }
-  </script>
+    <!-- 工具頁面Header -->
+    <section class="tool-hero">
+        <div class="bloomberg-container">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="bi bi-funnel"></i>
+                </div>
+                <h1 class="tool-title">智能選股</h1>
+                <p class="tool-subtitle">基於多重財務指標篩選優質投資標的</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 智能選股主體 -->
+    <section class="bloomberg-section">
+        <div class="screener-container">
+            <!-- 篩選條件 -->
+            <div class="filters-section">
+                <h2 class="filters-title">
+                    <i class="bi bi-sliders"></i>
+                    篩選條件設定
+                </h2>
+                
+                <form id="screenerForm">
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <label for="marketCap" class="form-label">市值範圍</label>
+                            <select id="marketCap" class="form-input">
+                                <option value="">不限</option>
+                                <option value="large">大型股 (>1000億)</option>
+                                <option value="mid">中型股 (100-1000億)</option>
+                                <option value="small">小型股 (<100億)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="peRatio" class="form-label">本益比 (PE)</label>
+                            <select id="peRatio" class="form-input">
+                                <option value="">不限</option>
+                                <option value="low">低估值 (<15)</option>
+                                <option value="moderate">合理 (15-25)</option>
+                                <option value="high">高成長 (>25)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dividendYield" class="form-label">股息殖利率</label>
+                            <select id="dividendYield" class="form-input">
+                                <option value="">不限</option>
+                                <option value="high">高股息 (>4%)</option>
+                                <option value="moderate">中等 (2-4%)</option>
+                                <option value="low">成長股 (<2%)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="industry" class="form-label">產業類別</label>
+                            <select id="industry" class="form-input">
+                                <option value="">不限</option>
+                                <option value="tech">科技業</option>
+                                <option value="finance">金融業</option>
+                                <option value="traditional">傳統產業</option>
+                                <option value="biotech">生技醫療</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="roe" class="form-label">ROE範圍</label>
+                            <select id="roe" class="form-input">
+                                <option value="">不限</option>
+                                <option value="excellent">優秀 (>20%)</option>
+                                <option value="good">良好 (15-20%)</option>
+                                <option value="average">一般 (10-15%)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="priceChange" class="form-label">近期表現</label>
+                            <select id="priceChange" class="form-input">
+                                <option value="">不限</option>
+                                <option value="strong">強勢 (近月+10%以上)</option>
+                                <option value="stable">穩定 (近月±5%內)</option>
+                                <option value="weak">弱勢 (近月-10%以下)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-screen">
+                        <i class="bi bi-funnel"></i>
+                        開始篩選
+                    </button>
+                </form>
+            </div>
+            
+            <!-- 篩選結果 -->
+            <div class="results-section">
+                <h2 class="results-title">
+                    <i class="bi bi-list-ul"></i>
+                    篩選結果
+                </h2>
+                
+                <div id="resultsContainer">
+                    <div style="text-align: center; color: #666; padding: 4rem 2rem;">
+                        <i class="bi bi-funnel" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p style="margin-top: 1rem; opacity: 0.7;">請設定篩選條件開始選股</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            document.getElementById('screenerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                performScreening();
+            });
+            
+            function performScreening() {
+                // 顯示載入狀態
+                const resultsContainer = document.getElementById('resultsContainer');
+                resultsContainer.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 4rem 2rem;">
+                        <i class="bi bi-arrow-clockwise" style="font-size: 3rem; opacity: 0.5; animation: spin 1s linear infinite;"></i>
+                        <p style="margin-top: 1rem; opacity: 0.7;">篩選中...</p>
+                    </div>
+                `;
+                
+                // 模擬API調用
+                setTimeout(() => {
+                    const mockStocks = generateMockResults();
+                    displayResults(mockStocks);
+                }, 2000);
+            }
+            
+            function generateMockResults() {
+                const stockCodes = ['2330', '2317', '2454', '2882', '6505', '3008', '2303', '2474', '2412', '2308'];
+                const stockNames = ['台積電', '鴻海', '聯發科', '中華電', '台塑化', '大立光', '聯電', '可成', '中華電信', '台達電'];
+                
+                return stockCodes.slice(0, 7).map((code, index) => {
+                    const price = 100 + Math.random() * 400;
+                    const change = (Math.random() - 0.5) * 20;
+                    const changePercent = (change / price * 100).toFixed(2);
+                    
+                    return {
+                        code,
+                        name: stockNames[index],
+                        price: price.toFixed(2),
+                        change: change.toFixed(2),
+                        changePercent,
+                        pe: (Math.random() * 30 + 5).toFixed(1),
+                        dividend: (Math.random() * 6 + 1).toFixed(2),
+                        roe: (Math.random() * 25 + 5).toFixed(1)
+                    };
+                });
+            }
+            
+            function displayResults(stocks) {
+                const resultsContainer = document.getElementById('resultsContainer');
+                
+                const tableHtml = `
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>股票代號</th>
+                                <th>公司名稱</th>
+                                <th>股價</th>
+                                <th>漲跌</th>
+                                <th>漲跌幅</th>
+                                <th>本益比</th>
+                                <th>殖利率</th>
+                                <th>ROE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${stocks.map(stock => `
+                                <tr style="cursor: pointer;" onclick="window.location.href='/stock?code=${stock.code}'">
+                                    <td class="stock-code">${stock.code}</td>
+                                    <td class="stock-name">${stock.name}</td>
+                                    <td class="stock-price">$${stock.price}</td>
+                                    <td class="stock-price ${stock.change > 0 ? 'positive' : stock.change < 0 ? 'negative' : 'neutral'}">
+                                        ${stock.change > 0 ? '+' : ''}${stock.change}
+                                    </td>
+                                    <td class="stock-price ${stock.changePercent > 0 ? 'positive' : stock.changePercent < 0 ? 'negative' : 'neutral'}">
+                                        ${stock.changePercent > 0 ? '+' : ''}${stock.changePercent}%
+                                    </td>
+                                    <td class="stock-price">${stock.pe}</td>
+                                    <td class="stock-price">${stock.dividend}%</td>
+                                    <td class="stock-price">${stock.roe}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                
+                resultsContainer.innerHTML = tableHtml;
+            }
+            
+            console.log('Stock Screener loaded successfully');
+        });
+        
+        // CSS for spin animation
+        const style = document.createElement('style');
+        style.textContent = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
-
